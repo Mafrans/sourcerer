@@ -1,5 +1,5 @@
 import { Notice, Plugin } from "obsidian";
-import { SourceListModal } from "./SourceListModal";
+import { SourceListModal } from "./editor/modals/SourceListModal";
 import { DEFAULT_SETTINGS, Settings } from "./Settings";
 import { SettingsTab } from "./SettingsTab";
 import { SourceManager } from "./SourceManager";
@@ -20,7 +20,7 @@ export class Sourcerer extends Plugin {
 
     this.app.vault.on("create", (file) => {
       if (this.sourceManager.fileIsSource(file)) {
-        this.sourceManager.addSource(file);
+        this.sourceManager.loadSource(file);
       }
     });
 

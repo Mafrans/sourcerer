@@ -1,8 +1,9 @@
 import fs from "fs";
-import toml from "toml";
-import { Notice, TAbstractFile, TFile } from "obsidian";
+import { TAbstractFile, Vault } from "obsidian";
 import { Person } from "./Person";
 import { getAbsolutePath } from "./utils";
+import toml, { JsonMap } from "@iarna/toml";
+import { join } from "path";
 
 type SourceFields = {
   title?: string;
@@ -75,8 +76,9 @@ export class Source {
     return new Source(fields, name.slice(0, -".md".length));
   }
 
-  public save(): void {
-    // ...
+  public save(vault: Vault, sourceDir: string): void {
+    const path = join(sourceDir, `${this.name}.md`);
+    vault.create(path, toml.stringify(this.fields as JsonMap));
   }
 
   public render(): HTMLDivElement {

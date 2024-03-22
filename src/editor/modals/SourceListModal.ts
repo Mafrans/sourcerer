@@ -1,12 +1,15 @@
 import { App, Modal, Notice } from "obsidian";
-import { Sourcerer } from "./Sourcerer";
+import { Sourcerer } from "../../Sourcerer";
+import { AddSourceModal } from "./AddSourceModal";
 
 export class SourceListModal extends Modal {
   private plugin: Sourcerer;
+  private addSourceModal: AddSourceModal;
 
   constructor(plugin: Sourcerer) {
     super(plugin.app);
     this.plugin = plugin;
+    this.addSourceModal = new AddSourceModal(plugin);
   }
 
   onOpen() {
@@ -31,7 +34,7 @@ export class SourceListModal extends Modal {
   }
 
   onAddSource() {
-    throw new Error("Not implemented");
+    this.addSourceModal.open();
   }
 
   onClose() {

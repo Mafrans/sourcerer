@@ -1,8 +1,7 @@
-import { join, resolve } from "path";
-import toml from "toml";
+import { join } from "path";
 import { Source } from "./Source";
 import { Sourcerer } from "./Sourcerer";
-import { Notice, TAbstractFile, TFile } from "obsidian";
+import { TAbstractFile } from "obsidian";
 import { getVaultRootPath } from "./utils";
 
 export class SourceManager {
@@ -14,9 +13,16 @@ export class SourceManager {
     this.sources = [];
   }
 
-  public async addSource(file: TAbstractFile): Promise<void> {
-    const source = await Source.load(file);
+  public addSource(source: Source): void {
+    source.save(this.plugin.app.vault, this.plugin.settings.sourceDir);
     this.sources.push(source);
+  }
+
+  public loadSource(file: TAbstractFile): void {
+    const source = Source.load(file);
+    if (!this.hasSource(source.name)) {
+      this.sources.push(source);
+    }
   }
 
   public fileIsSource(file: TAbstractFile): boolean {

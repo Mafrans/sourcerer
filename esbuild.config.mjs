@@ -9,7 +9,7 @@ fs.copyFileSync("manifest.json", "dist/manifest.json");
 fs.copyFileSync("versions.json", "dist/versions.json");
 
 const context = await esbuild.context({
-  entryPoints: ["main.ts"],
+  entryPoints: ["main.ts", "styles.css"],
   bundle: true,
   external: [
     "obsidian",
@@ -32,7 +32,7 @@ const context = await esbuild.context({
   logLevel: "info",
   sourcemap: prod ? false : "inline",
   treeShaking: true,
-  outfile: "dist/main.js",
+  outdir: "dist",
 });
 
 if (prod) {

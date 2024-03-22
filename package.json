@@ -19,7 +19,7 @@
     "@codemirror/language": "^6.10.0",
     "@codemirror/state": "^6.4.0",
     "@codemirror/view": "^6.23.0",
-    "obsidian": "^1.4.11",
-    "toml": "^3.0.0"
+    "@iarna/toml": "^2.2.5",
+    "obsidian": "^1.4.11"
   }
 }
