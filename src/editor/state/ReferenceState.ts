@@ -6,6 +6,8 @@ import { ReferenceWidget } from "../widgets/ReferenceWidget";
 import { Sourcerer } from "../../Sourcerer";
 import { Source } from "../../Source";
 import { BibliographyWidget } from "../widgets/BibliographyWidget";
+import { parseFrontMatter } from "../../utils";
+import { getCiteStyle } from "../../CiteStyle";
 
 export function makeReferenceState(
   plugin: Sourcerer
@@ -18,20 +20,23 @@ export function makeReferenceState(
       const builder = new RangeSetBuilder<Decoration>();
       const selection = tr.state.selection?.main;
 
+      const activeFile = plugin.app.workspace.getActiveFile();
+      if (activeFile == null) return value;
+
+      const metadata = plugin.app.metadataCache.getFileCache(activeFile);
+      const citeStyle = getCiteStyle(
+        metadata?.frontmatter?.["cite-style"] ?? ""
+      );
+      if (citeStyle == null) return value;
+
       let sources: Source[] = [];
       syntaxTree(tr.state).iterate({
         enter(node) {
           const content = tr.state.sliceDoc(node.from, node.to);
 
           if (node.type.name === "hmd-internal-link") {
-            const linkFile = plugin.app.vault.getAbstractFileByPath(
-              `${content}.md`
-            );
-
-            if (linkFile == null) return;
-            if (!plugin.sourceManager.fileIsSource(linkFile)) return;
-
-            const source = Source.load(linkFile);
+            const source = plugin.sourceManager.getSource(content);
+            if (source == null) return;
 
             if (!sources.includes(source)) {
               sources.push(source);
@@ -46,7 +51,11 @@ export function makeReferenceState(
               from,
               to,
               Decoration.replace({
-                widget: new ReferenceWidget(sources.indexOf(source), source),
+                widget: new ReferenceWidget(
+                  sources.indexOf(source),
+                  source,
+                  citeStyle
+                ),
               })
             );
           }
@@ -63,7 +72,7 @@ export function makeReferenceState(
             decoration = Decoration.mark({ class: "cm-inline-code" });
           } else {
             decoration = Decoration.replace({
-              widget: new BibliographyWidget(sources),
+              widget: new BibliographyWidget(sources, citeStyle),
               block: true,
             });
           }

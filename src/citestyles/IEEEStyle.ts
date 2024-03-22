@@ -10,6 +10,7 @@ export class IEEEStyle implements CiteStyle {
 
   bibliography(sources: Source[]): HTMLElement {
     const table = document.createElement("table");
+    table.classList.add("bibliography");
 
     for (let i = 0; i < sources.length; i++) {
       const source = sources[i];

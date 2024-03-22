@@ -24,8 +24,8 @@ export class APAStyle implements CiteStyle {
   }
 
   bibliography(sources: Source[]): HTMLElement {
-    const element = document.createElement("table");
-    element.classList.add("bibliography");
+    const table = document.createElement("table");
+    table.classList.add("bibliography");
 
     for (const source of sources) {
       const row = document.createElement("tr");
@@ -34,9 +34,9 @@ export class APAStyle implements CiteStyle {
       cell.appendChild(source.render());
 
       row.appendChild(cell);
-      element.appendChild(row);
+      table.appendChild(row);
     }
 
-    return element;
+    return table;
   }
 }

@@ -8,7 +8,7 @@ export interface CiteStyle {
 }
 
 export function getCiteStyle(name: string): CiteStyle | undefined {
-  switch (name) {
+  switch (name.toLowerCase()) {
     case "apa":
       return new APAStyle();
     case "ieee":

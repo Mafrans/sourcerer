@@ -4,6 +4,8 @@ import { DEFAULT_SETTINGS, Settings } from "./Settings";
 import { SettingsTab } from "./SettingsTab";
 import { SourceManager } from "./SourceManager";
 import { makeReferenceState } from "./editor/state/ReferenceState";
+import { makeBibliographyProcessor } from "./editor/postprocessor/BibliographyProcessor";
+import { makeReferenceProcessor } from "./editor/postprocessor/ReferenceProcessor";
 
 export const APP_NAME = "Sourcerer";
 
@@ -27,6 +29,8 @@ export class Sourcerer extends Plugin {
     await this.loadSettings();
     this.addSettingTab(this.settingsTab);
     this.registerEditorExtension([makeReferenceState(this)]);
+    this.registerMarkdownPostProcessor(makeBibliographyProcessor(this));
+    this.registerMarkdownPostProcessor(makeReferenceProcessor(this));
 
     this.addRibbonIcon("dice", "Greet", async () => {
       this.sourceListModal.open();
