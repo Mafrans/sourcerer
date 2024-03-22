@@ -1,4 +1,4 @@
-import fs from "fs";
+import fs, { mkdirSync } from "fs";
 import { TAbstractFile, Vault } from "obsidian";
 import { Person } from "./Person";
 import { getAbsolutePath } from "./utils";
@@ -78,7 +78,14 @@ export class Source {
 
   public save(vault: Vault, sourceDir: string): void {
     const path = join(sourceDir, `${this.name}.md`);
-    vault.create(path, toml.stringify(this.fields as JsonMap));
+
+    if (!vault.adapter.exists(sourceDir)) {
+      vault.createFolder(sourceDir);
+    }
+
+    if (!vault.adapter.exists(path)) {
+      vault.create(path, toml.stringify(this.fields as JsonMap));
+    }
   }
 
   public render(): HTMLDivElement {

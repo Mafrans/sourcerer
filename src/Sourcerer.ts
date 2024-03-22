@@ -6,6 +6,7 @@ import { SourceManager } from "./SourceManager";
 import { makeReferenceState } from "./editor/state/ReferenceState";
 import { makeBibliographyProcessor } from "./editor/postprocessor/BibliographyProcessor";
 import { makeReferenceProcessor } from "./editor/postprocessor/ReferenceProcessor";
+import { basename } from "path";
 
 export const APP_NAME = "Sourcerer";
 
@@ -23,6 +24,19 @@ export class Sourcerer extends Plugin {
     this.app.vault.on("create", (file) => {
       if (this.sourceManager.fileIsSource(file)) {
         this.sourceManager.loadSource(file);
+      }
+    });
+
+    this.app.vault.on("rename", (file, oldPath) => {
+      if (this.sourceManager.fileIsSource(file)) {
+        this.sourceManager.removeSource(basename(oldPath, ".md"));
+        this.sourceManager.loadSource(file);
+      }
+    });
+
+    this.app.vault.on("delete", (file) => {
+      if (this.sourceManager.fileIsSource(file)) {
+        this.sourceManager.removeSource(basename(file.name, ".md"));
       }
     });
 

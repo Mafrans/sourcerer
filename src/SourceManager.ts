@@ -16,6 +16,13 @@ export class SourceManager {
     this.sources.push(source);
   }
 
+  public removeSource(name: string): void {
+    const index = this.sources.findIndex((source) => source.name === name);
+    if (index !== -1) {
+      this.sources.splice(index, 1);
+    }
+  }
+
   public loadSource(file: TAbstractFile): void {
     const source = Source.load(file);
     if (!this.hasSource(source.name)) {
