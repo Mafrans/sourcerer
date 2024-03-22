@@ -5,6 +5,10 @@ import fs from "fs";
 
 const prod = process.argv[2] === "production";
 
+if (!fs.existsSync("dist")) {
+  fs.mkdirSync("dist");
+}
+
 fs.copyFileSync("manifest.json", "dist/manifest.json");
 fs.copyFileSync("versions.json", "dist/versions.json");
 
