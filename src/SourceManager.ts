@@ -1,8 +1,6 @@
-import { join } from "path";
 import { Source } from "./Source";
 import { Sourcerer } from "./Sourcerer";
 import { TAbstractFile } from "obsidian";
-import { getVaultRootPath } from "./utils";
 
 export class SourceManager {
   private plugin: Sourcerer;

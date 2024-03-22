@@ -6,7 +6,7 @@ export function makeReferenceProcessor(
   plugin: Sourcerer
 ): MarkdownPostProcessor {
   return (element, context) => {
-    const citeStyle = getCiteStyle(context.frontmatter["cite-style"] ?? "");
+    const citeStyle = getCiteStyle(context.frontmatter?.["cite-style"] ?? "");
     if (citeStyle == null) return;
 
     const references = Array.from(

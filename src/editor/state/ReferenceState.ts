@@ -1,12 +1,10 @@
 import { syntaxTree } from "@codemirror/language";
 import { Extension, RangeSetBuilder, StateField } from "@codemirror/state";
 import { Decoration, DecorationSet, EditorView } from "@codemirror/view";
-import { Notice, iterateRefs } from "obsidian";
 import { ReferenceWidget } from "../widgets/ReferenceWidget";
 import { Sourcerer } from "../../Sourcerer";
 import { Source } from "../../Source";
 import { BibliographyWidget } from "../widgets/BibliographyWidget";
-import { parseFrontMatter } from "../../utils";
 import { getCiteStyle } from "../../CiteStyle";
 
 export function makeReferenceState(

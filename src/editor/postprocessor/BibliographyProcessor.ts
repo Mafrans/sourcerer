@@ -7,7 +7,7 @@ export function makeBibliographyProcessor(
 ): MarkdownPostProcessor {
   return (element, context) => {
     const sources = plugin.sourceManager.sources;
-    const citeStyle = getCiteStyle(context.frontmatter["cite-style"] ?? "");
+    const citeStyle = getCiteStyle(context.frontmatter?.["cite-style"] ?? "");
     if (citeStyle == null) return;
 
     const bibliographies = Array.from(element.querySelectorAll("p")).filter(

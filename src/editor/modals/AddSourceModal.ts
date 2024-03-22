@@ -4,6 +4,7 @@ import { Person } from "../../Person";
 import { Source } from "../../Source";
 
 export class AddSourceModal extends Modal {
+  public onAddSource?: (source: Source) => void;
   private plugin: Sourcerer;
 
   constructor(plugin: Sourcerer) {
@@ -75,14 +76,11 @@ export class AddSourceModal extends Modal {
       (_, index) => new Person(authorFirstNames[index], authorLastNames[index])
     );
 
-    this.plugin.sourceManager.addSource(
-      new Source({
-        title,
-        author,
-      })
-    );
+    const source = new Source({ title, author });
+    this.plugin.sourceManager.addSource(source);
 
     this.close();
+    this.onAddSource?.(source);
   }
 
   onClose() {

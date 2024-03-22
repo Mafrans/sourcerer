@@ -23,4 +23,8 @@ export class Person {
 
     return new Person(firstName, lastName);
   }
+
+  public static fromObject(obj: any): Person {
+    return new Person(obj.firstName, obj.lastName);
+  }
 }

@@ -1,7 +1,6 @@
-import { Decoration, EditorView, WidgetType } from "@codemirror/view";
+import { EditorView, WidgetType } from "@codemirror/view";
 import { Source } from "../../Source";
-import { parseFrontMatter } from "../../utils";
-import { CiteStyle, getCiteStyle } from "../../CiteStyle";
+import { CiteStyle } from "../../CiteStyle";
 
 export class BibliographyWidget extends WidgetType {
   private sources: Source[];

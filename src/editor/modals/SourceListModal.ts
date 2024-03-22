@@ -1,6 +1,7 @@
-import { App, Modal, Notice } from "obsidian";
+import { Modal } from "obsidian";
 import { Sourcerer } from "../../Sourcerer";
 import { AddSourceModal } from "./AddSourceModal";
+import { Person } from "../../Person";
 
 export class SourceListModal extends Modal {
   private plugin: Sourcerer;
@@ -10,31 +11,38 @@ export class SourceListModal extends Modal {
     super(plugin.app);
     this.plugin = plugin;
     this.addSourceModal = new AddSourceModal(plugin);
+    this.addSourceModal.onAddSource = () => this.regenerateSourceList();
   }
 
   onOpen() {
     let { contentEl } = this;
-    contentEl.setText("Sources");
+    contentEl.innerHTML = `
+      <h3>Sources</h3>
+      <ul class="source-list"></ul>
+      <button>Add source</button>
+    `;
 
-    // List of sources
-    const sources = this.plugin.sourceManager.sources;
+    this.regenerateSourceList();
 
-    const sourceList = contentEl.createEl("ul");
-    for (const source of sources) {
-      const sourceItem = sourceList.createEl("li");
-      sourceItem.textContent = `${source.name}: ${JSON.stringify(
-        source.fields
-      )}`;
-    }
-
-    // Add source button
-    const addSourceButton = contentEl.createEl("button");
-    addSourceButton.textContent = "Add source";
-    addSourceButton.addEventListener("click", () => this.onAddSource());
+    const addSourceButton = contentEl.querySelector("button")!;
+    addSourceButton.addEventListener("click", () => this.addSourceModal.open());
   }
 
-  onAddSource() {
-    this.addSourceModal.open();
+  regenerateSourceList() {
+    const sourceList = this.contentEl.querySelector(".source-list");
+    if (!sourceList) return;
+
+    sourceList.empty();
+    for (const source of this.plugin.sourceManager.sources) {
+      const { title, author } = source.fields;
+      const sourceItem = sourceList.createEl("li");
+      sourceItem.innerHTML = `
+        <div class="source-title">${title}</div>
+        <div class="source-author">${
+          author?.map(Person.fromObject)?.join(", ") || "No authors"
+        }</div>
+      `;
+    }
   }
 
   onClose() {
