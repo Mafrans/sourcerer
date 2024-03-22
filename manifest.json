@@ -1,0 +1,10 @@
+{
+  "id": "sourcerer",
+  "name": "Sourcerer",
+  "version": "1.0.0",
+  "minAppVersion": "1.4.16",
+  "description": "A source manager.",
+  "author": "Mafrans",
+  "authorUrl": "https://mafra.nz/",
+  "isDesktopOnly": false
+}
