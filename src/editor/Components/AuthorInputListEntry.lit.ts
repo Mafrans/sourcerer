@@ -6,7 +6,7 @@ import { ObsidianStyleMixin } from "../ObsidianStyleMixin";
 @customElement("x-author-input-list-entry")
 export class AuthorInputListEntry extends ObsidianStyleMixin(LitElement) {
   @property({ type: Object })
-  defaultAuthor: Person = new Person();
+  author: Person = new Person();
 
   static styles = css`
     li {
@@ -38,13 +38,13 @@ export class AuthorInputListEntry extends ObsidianStyleMixin(LitElement) {
             type="text"
             placeholder="First name"
             name="author-firstName"
-            .defaultValue=${this.defaultAuthor?.firstName ?? ""}
+            .value=${this.author.firstName}
           />
           <input
             type="text"
             placeholder="Last name"
             name="author-lastName"
-            .defaultValue=${this.defaultAuthor?.lastName ?? ""}
+            .value=${this.author.lastName}
           />
         </div>
         <x-mini-button @click=${() => this.dispatchEvent(deleteEvent)}

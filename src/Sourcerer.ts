@@ -1,4 +1,4 @@
-import { Notice, Plugin } from "obsidian";
+import { Notice, Plugin, TFile } from "obsidian";
 import { SourceListModal } from "./editor/modals/SourceListModal";
 import { DEFAULT_SETTINGS, Settings } from "./Settings";
 import { SettingsTab } from "./SettingsTab";
@@ -11,6 +11,8 @@ import { EditSourceForm } from "./editor/Components/EditSourceForm.lit";
 import { AuthorInputList } from "./editor/Components/AuthorInputList.lit";
 import { AuthorInputListEntry } from "./editor/Components/AuthorInputListEntry.lit";
 import { MiniButton } from "./editor/Components/MiniButton.lit";
+import { SourceList } from "./editor/Components/SourceList.lit";
+import { SourceListEntry } from "./editor/Components/SourceListEntry.lit";
 
 export const APP_NAME = "Sourcerer";
 
@@ -27,14 +29,14 @@ export class Sourcerer extends Plugin {
 
     this.app.vault.on("create", (file) => {
       if (this.sourceManager.fileIsSource(file)) {
-        this.sourceManager.loadSource(file);
+        this.sourceManager.loadSource(file as TFile);
       }
     });
 
     this.app.vault.on("rename", (file, oldPath) => {
       if (this.sourceManager.fileIsSource(file)) {
         this.sourceManager.removeSource(basename(oldPath, ".md"));
-        this.sourceManager.loadSource(file);
+        this.sourceManager.loadSource(file as TFile);
       }
     });
 
@@ -49,6 +51,8 @@ export class Sourcerer extends Plugin {
     this.registerComponent("x-author-input-list", AuthorInputList);
     this.registerComponent("x-author-input-list-entry", AuthorInputListEntry);
     this.registerComponent("x-mini-button", MiniButton);
+    this.registerComponent("x-source-list", SourceList);
+    this.registerComponent("x-source-list-entry", SourceListEntry);
 
     await this.loadSettings();
     this.addSettingTab(this.settingsTab);

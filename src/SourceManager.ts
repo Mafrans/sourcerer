@@ -1,6 +1,7 @@
+import { basename, join } from "path";
 import { Source } from "./Source";
 import { Sourcerer } from "./Sourcerer";
-import { TAbstractFile } from "obsidian";
+import { TAbstractFile, TFile } from "obsidian";
 
 export class SourceManager {
   private plugin: Sourcerer;
@@ -12,7 +13,7 @@ export class SourceManager {
   }
 
   public addSource(source: Source): void {
-    source.save(this.plugin.app.vault, this.plugin.settings.sourceDir);
+    this.saveSource(source);
     this.sources.push(source);
   }
 
@@ -23,10 +24,32 @@ export class SourceManager {
     }
   }
 
-  public loadSource(file: TAbstractFile): void {
-    const source = Source.load(file);
-    if (!this.hasSource(source.name)) {
-      this.sources.push(source);
+  public async saveSource(source: Source): Promise<void> {
+    const {
+      app: { vault, fileManager },
+      settings: { sourceDir },
+    } = this.plugin;
+
+    const path = join(sourceDir, `${source.name}.md`);
+    let file = vault.getFileByPath(path);
+
+    await vault.createFolder(sourceDir).catch(() => /* Do nothing */ {});
+    if (file == null) {
+      file = await vault.create(path, "");
+    }
+
+    fileManager.processFrontMatter(file, (fm) =>
+      Object.assign(fm, source.fields)
+    );
+  }
+
+  public async loadSource(file: TFile): Promise<void> {
+    const fileManager = this.plugin.app.fileManager;
+    const name = basename(file.name, ".md");
+    if (!this.hasSource(name)) {
+      let fields;
+      await fileManager.processFrontMatter(file, (fm) => (fields = fm));
+      this.sources.push(new Source(fields, name));
     }
   }
 

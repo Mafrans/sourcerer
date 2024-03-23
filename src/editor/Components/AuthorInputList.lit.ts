@@ -7,7 +7,7 @@ import { map } from "lit/directives/map.js";
 @customElement("x-author-input-list")
 export class AuthorInputList extends ObsidianStyleMixin(LitElement) {
   @property({ type: Array })
-  defaultAuthors: Person[] = [];
+  authors: Person[] = [];
 
   static styles = css`
     ul {
@@ -39,10 +39,10 @@ export class AuthorInputList extends ObsidianStyleMixin(LitElement) {
         <div class="title">Authors</div>
         <ul>
           ${map(
-            this.defaultAuthors,
+            this.authors,
             (author, i) =>
               html`<x-author-input-list-entry
-                .defaultAuthor=${author}
+                .author=${author}
                 @delete=${() => this.deleteAuthor(i)}
               ></x-author-input-list-entry>`
           )}
@@ -55,10 +55,10 @@ export class AuthorInputList extends ObsidianStyleMixin(LitElement) {
   }
 
   addAuthor() {
-    this.defaultAuthors = [...this.defaultAuthors, new Person()];
+    this.authors = [...this.authors, new Person()];
   }
 
   deleteAuthor(index: number) {
-    this.defaultAuthors = this.defaultAuthors.filter((_, i) => i !== index);
+    this.authors = this.authors.filter((_, i) => i !== index);
   }
 }

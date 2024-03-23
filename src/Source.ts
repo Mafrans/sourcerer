@@ -1,8 +1,13 @@
 import fs, { mkdirSync } from "fs";
-import { TAbstractFile, Vault } from "obsidian";
+import {
+  TAbstractFile,
+  TFile,
+  Vault,
+  parseYaml,
+  stringifyYaml,
+} from "obsidian";
 import { Person } from "./Person";
 import { getAbsolutePath } from "./utils";
-import toml, { JsonMap } from "@iarna/toml";
 import { join } from "path";
 
 type SourceFields = {
@@ -38,7 +43,7 @@ export class Source {
   public readonly name: string;
   public readonly fields: SourceFields;
 
-  constructor(fields: SourceFields, name?: string) {
+  constructor(fields: SourceFields = {}, name?: string) {
     this.fields = fields;
     this.name = name ?? this.generateName();
   }
@@ -60,32 +65,6 @@ export class Source {
     }
 
     return name;
-  }
-
-  public static load(file: TAbstractFile): Source {
-    const { path, name } = file;
-    const absolutePath = getAbsolutePath(file);
-
-    if (!fs.existsSync(absolutePath)) {
-      throw new Error(`File does not exist: ${absolutePath}`);
-    }
-
-    const content = fs.readFileSync(absolutePath, { encoding: "utf-8" });
-    const fields = toml.parse(content) as SourceFields;
-
-    return new Source(fields, name.slice(0, -".md".length));
-  }
-
-  public save(vault: Vault, sourceDir: string): void {
-    const path = join(sourceDir, `${this.name}.md`);
-
-    if (!vault.adapter.exists(sourceDir)) {
-      vault.createFolder(sourceDir);
-    }
-
-    if (!vault.adapter.exists(path)) {
-      vault.create(path, toml.stringify(this.fields as JsonMap));
-    }
   }
 
   public render(): HTMLDivElement {

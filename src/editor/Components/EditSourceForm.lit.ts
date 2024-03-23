@@ -7,11 +7,8 @@ import { Source } from "../../Source";
 
 @customElement("x-edit-source-form")
 export class EditSourceForm extends ObsidianStyleMixin(LitElement) {
-  @property({ type: String })
-  defaultTitle: string = "";
-
-  @property({ type: Array })
-  defaultAuthors: Person[] = [];
+  @property({ type: Object })
+  defaultSource: Source | undefined;
 
   public static styles = css`
     .edit-source-form > * {
@@ -44,21 +41,27 @@ export class EditSourceForm extends ObsidianStyleMixin(LitElement) {
   `;
 
   render() {
+    const title = this.defaultSource?.fields.title ?? "";
+    let authors = this.defaultSource?.fields.author ?? [new Person()];
+
     const cancelEvent = new CustomEvent("cancel", {
       bubbles: true,
       composed: true,
     });
 
     return html`
-      <form method="dialog" class="edit-source-form">
+      <form @submit=${this.onSubmit} method="dialog" class="edit-source-form">
         <label>
           <span>Title</span>
-          <input type="text" placeholder="Title" name="title" />
+          <input
+            type="text"
+            placeholder="Title"
+            .defaultValue=${title}
+            name="title"
+          />
         </label>
 
-        <x-author-input-list
-          .defaultAuthors=${this.defaultAuthors}
-        ></x-author-input-list>
+        <x-author-input-list .authors=${authors}></x-author-input-list>
 
         <div class="buttons">
           <button
@@ -72,5 +75,25 @@ export class EditSourceForm extends ObsidianStyleMixin(LitElement) {
         </div>
       </form>
     `;
+  }
+
+  onSubmit(event: SubmitEvent) {
+    const data = new FormData(event.target as HTMLFormElement);
+    console.log(data);
+    const title = data.get("title") as string;
+    const authorFirstNames = data.getAll("author-firstName") as string[];
+    const authorLastNames = data.getAll("author-lastName") as string[];
+    const author: Person[] = authorFirstNames.map(
+      (_, index) => new Person(authorFirstNames[index], authorLastNames[index])
+    );
+
+    const source = new Source({ title, author });
+    this.dispatchEvent(
+      new CustomEvent("add-source", {
+        detail: source,
+        bubbles: true,
+        composed: true,
+      })
+    );
   }
 }
