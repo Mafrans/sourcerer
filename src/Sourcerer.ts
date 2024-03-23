@@ -7,6 +7,10 @@ import { makeReferenceState } from "./editor/state/ReferenceState";
 import { makeBibliographyProcessor } from "./editor/postprocessor/BibliographyProcessor";
 import { makeReferenceProcessor } from "./editor/postprocessor/ReferenceProcessor";
 import { basename } from "path";
+import { EditSourceForm } from "./editor/Components/EditSourceForm.lit";
+import { AuthorInputList } from "./editor/Components/AuthorInputList.lit";
+import { AuthorInputListEntry } from "./editor/Components/AuthorInputListEntry.lit";
+import { MiniButton } from "./editor/Components/MiniButton.lit";
 
 export const APP_NAME = "Sourcerer";
 
@@ -40,13 +44,19 @@ export class Sourcerer extends Plugin {
       }
     });
 
+    // Register components
+    this.registerComponent("x-edit-source-form", EditSourceForm);
+    this.registerComponent("x-author-input-list", AuthorInputList);
+    this.registerComponent("x-author-input-list-entry", AuthorInputListEntry);
+    this.registerComponent("x-mini-button", MiniButton);
+
     await this.loadSettings();
     this.addSettingTab(this.settingsTab);
     this.registerEditorExtension([makeReferenceState(this)]);
     this.registerMarkdownPostProcessor(makeBibliographyProcessor(this));
     this.registerMarkdownPostProcessor(makeReferenceProcessor(this));
 
-    this.addRibbonIcon("dice", "Greet", async () => {
+    this.addRibbonIcon("book-marked", "Source library", async () => {
       this.sourceListModal.open();
     });
   }
@@ -59,5 +69,11 @@ export class Sourcerer extends Plugin {
 
   async saveSettings() {
     await this.saveData(this.settings);
+  }
+
+  registerComponent(name: string, component: CustomElementConstructor) {
+    if (!customElements.get(name)) {
+      customElements.define(name, component);
+    }
   }
 }

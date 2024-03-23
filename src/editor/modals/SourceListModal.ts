@@ -12,12 +12,12 @@ export class SourceListModal extends Modal {
     this.plugin = plugin;
     this.addSourceModal = new AddSourceModal(plugin);
     this.addSourceModal.onAddSource = () => this.regenerateSourceList();
+    this.setTitle("Sources");
   }
 
   onOpen() {
     let { contentEl } = this;
     contentEl.innerHTML = `
-      <h3>Sources</h3>
       <ul class="source-list"></ul>
       <button>Add source</button>
     `;
