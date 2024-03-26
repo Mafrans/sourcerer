@@ -6,18 +6,17 @@ import Dialog from "../Components/Dialog.svelte";
 export class DeleteSourceModal extends Modal {
   private plugin: Sourcerer;
   private source?: Source;
-  private closeCallback?: () => void;
   private component?: Dialog;
 
   constructor(plugin: Sourcerer) {
     super(plugin.app);
     this.plugin = plugin;
+    this.modalEl.style.maxWidth = "20em";
     this.setTitle("Delete source");
   }
 
-  open(source?: Source, closeCallback?: () => void): void {
+  open(source?: Source): void {
     this.source = source ?? new Source();
-    this.closeCallback = closeCallback;
     super.open();
   }
 
@@ -36,14 +35,20 @@ export class DeleteSourceModal extends Modal {
   }
 
   deleteSource(source: Source) {
-    this.plugin.sourceManager.deleteSourceFile(source.name);
+    const {
+      app: { vault },
+      settings,
+    } = this.plugin;
+
+    const file = source.getFile(vault, settings);
+    if (file != null) {
+      vault.delete(file);
+    }
     this.close();
   }
 
   onClose(): void {
     this.contentEl.empty();
     this.source = undefined;
-
-    this.closeCallback?.();
   }
 }

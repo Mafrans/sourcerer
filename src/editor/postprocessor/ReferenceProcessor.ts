@@ -1,6 +1,7 @@
 import { MarkdownPostProcessor } from "obsidian";
 import { Sourcerer } from "../../Sourcerer";
 import { getCiteStyle } from "../../CiteStyle";
+import { getSource, hasSource } from "../../store/sources";
 
 export function makeReferenceProcessor(
   plugin: Sourcerer
@@ -11,11 +12,11 @@ export function makeReferenceProcessor(
 
     const references = Array.from(
       element.querySelectorAll<HTMLAnchorElement>("a.internal-link")
-    ).filter((a) => plugin.sourceManager.hasSource(a.dataset.href!));
+    ).filter((a) => hasSource(a.dataset.href!));
 
     let index = 0;
     for (const reference of references) {
-      const source = plugin.sourceManager.getSource(reference.dataset.href!);
+      const source = getSource(reference.dataset.href!);
       if (source == null) continue;
 
       const widget = citeStyle.cite(source, index);

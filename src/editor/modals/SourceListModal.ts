@@ -24,25 +24,11 @@ export class SourceListModal extends Modal {
     this.component = new SourceList({
       target: this.contentEl,
       props: {
-        sources: this.plugin.sourceManager.sources,
         onAddSource: () => this.editSourceModal.open(),
-        onEditSource: (source: Source) =>
-          this.editSourceModal.open(source, () => this.refresh()),
-        onDeleteSource: (source: Source) =>
-          this.deleteSourceModal.open(source, () => this.refresh()),
+        onEditSource: (source: Source) => this.editSourceModal.open(source),
+        onDeleteSource: (source: Source) => this.deleteSourceModal.open(source),
       },
     });
-  }
-
-  refresh(): void {
-    console.log("Refreshing source list", this.plugin.sourceManager.sources);
-    this.component?.$set({ sources: this.plugin.sourceManager.sources });
-  }
-
-  addSource(source: Source) {
-    this.close();
-    this.plugin.sourceManager.addSource(source);
-    this.editSourceModal.open(source, () => this.refresh());
   }
 
   onClose(): void {

@@ -7,8 +7,9 @@ import {
   stringifyYaml,
 } from "obsidian";
 import { Person } from "./Person";
-import { getAbsolutePath } from "./utils";
-import { join } from "path";
+import { getAbsolutePath, getVaultRootPath } from "./utils";
+import { basename, join } from "path";
+import { Settings } from "./Settings";
 
 export type SourceFields = {
   title?: string;
@@ -50,6 +51,49 @@ export class Source {
 
   public regenerateName() {
     this.name = this.name || this.generateName();
+  }
+
+  private getFilePath(vault: Vault, settings: Settings): string {
+    return join(
+      getVaultRootPath(vault) ?? "",
+      settings.sourceDir,
+      `${this.name}.md`
+    );
+  }
+
+  public getFile(vault: Vault, settings: Settings): TFile | null {
+    return vault.getFileByPath(this.getFilePath(vault, settings));
+  }
+
+  public async save(vault: Vault, settings: Settings): Promise<void> {
+    const path = this.getFilePath(vault, settings);
+    const content = stringifyYaml(this.fields);
+
+    const sourceDir = vault.getFolderByPath(settings.sourceDir);
+    if (sourceDir == null) {
+      await vault.createFolder(settings.sourceDir);
+    }
+
+    let file = vault.getFileByPath(path);
+    if (file == null) {
+      file = await vault.create(path, "");
+    }
+
+    await vault.modify(file, "---\n" + content + "\n---");
+  }
+
+  public static async load(vault: Vault, file: TFile): Promise<Source | null> {
+    const content = await vault.read(file);
+    const front = content.split("---")?.[1];
+
+    if (front == null) {
+      return null;
+    }
+
+    const fields = parseYaml(front) as SourceFields;
+    const name = basename(file.name, ".md");
+
+    return new Source(fields, name);
   }
 
   isValid() {

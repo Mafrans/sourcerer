@@ -1,8 +1,8 @@
 <script lang="ts">
   import { Source } from "../../Source";
+  import { sources } from "../../store/sources";
   import SourceListItem from "./SourceListItem.svelte";
 
-  export let sources: Source[] = [];
   export let onAddSource: () => void;
   export let onEditSource: (source: Source) => void;
   export let onDeleteSource: (source: Source) => void;
@@ -10,9 +10,9 @@
 
 <div class="sources">
   <ul>
-    {#each sources as source}
+    {#each $sources as source}
       <SourceListItem
-        {source}
+        source={source}
         onEdit={onEditSource}
         onDelete={onDeleteSource}
       />

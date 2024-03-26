@@ -2,42 +2,59 @@ import { Notice, Plugin, TFile } from "obsidian";
 import { SourceListModal } from "./editor/modals/SourceListModal";
 import { DEFAULT_SETTINGS, Settings } from "./Settings";
 import { SettingsTab } from "./SettingsTab";
-import { SourceManager } from "./SourceManager";
+import {
+  fileIsSource,
+  updateSource,
+  sources,
+  addSource,
+  removeSource,
+} from "./store/sources";
 import { makeReferenceState } from "./editor/state/ReferenceState";
 import { makeBibliographyProcessor } from "./editor/postprocessor/BibliographyProcessor";
 import { makeReferenceProcessor } from "./editor/postprocessor/ReferenceProcessor";
 import { basename } from "path";
+import { Source } from "./Source";
 
 export const APP_NAME = "Sourcerer";
 
 export class Sourcerer extends Plugin {
   settingsTab!: SettingsTab;
-  sourceManager!: SourceManager;
   sourceListModal!: SourceListModal;
   settings!: Settings;
 
   async onload(): Promise<void> {
-    this.sourceManager = new SourceManager(this);
     this.settingsTab = new SettingsTab(this);
     this.sourceListModal = new SourceListModal(this);
 
-    this.app.vault.on("create", (file) => {
-      if (this.sourceManager.fileIsSource(file)) {
-        this.sourceManager.loadSource(file as TFile);
+    const vault = this.app.vault;
+    vault.on("create", async (file) => {
+      if (!fileIsSource(vault, this.settings, file)) return;
+      const source = await Source.load(vault, file as TFile);
+      if (source != null) {
+        addSource(source);
       }
     });
 
-    this.app.vault.on("rename", (file, oldPath) => {
-      if (this.sourceManager.fileIsSource(file)) {
-        this.sourceManager.removeSource(basename(oldPath, ".md"));
-        this.sourceManager.loadSource(file as TFile);
+    vault.on("modify", async (file) => {
+      if (!fileIsSource(vault, this.settings, file)) return;
+      const source = await Source.load(vault, file as TFile);
+      if (source != null) {
+        updateSource(source);
       }
     });
 
-    this.app.vault.on("delete", (file) => {
-      if (this.sourceManager.fileIsSource(file)) {
-        this.sourceManager.removeSource(basename(file.name, ".md"));
+    vault.on("rename", async (file, oldPath) => {
+      if (!fileIsSource(vault, this.settings, file)) return;
+      const source = await Source.load(vault, file as TFile);
+      if (source != null) {
+        removeSource(basename(oldPath, ".md"));
+        addSource(source);
       }
+    });
+
+    vault.on("delete", (file) => {
+      if (!fileIsSource(vault, this.settings, file)) return;
+      removeSource(basename(file.path, ".md"));
     });
 
     await this.loadSettings();

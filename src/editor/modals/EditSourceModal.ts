@@ -7,7 +7,6 @@ export class EditSourceModal extends Modal {
   private plugin: Sourcerer;
   private source?: Source;
   private component?: EditSourceForm;
-  private closeCallback?: () => void;
 
   constructor(plugin: Sourcerer) {
     super(plugin.app);
@@ -15,9 +14,8 @@ export class EditSourceModal extends Modal {
     this.setTitle("Edit source");
   }
 
-  open(source?: Source, closeCallback?: () => void): void {
+  open(source?: Source): void {
     this.source = source ?? new Source();
-    this.closeCallback = closeCallback;
     super.open();
   }
 
@@ -33,13 +31,18 @@ export class EditSourceModal extends Modal {
   }
 
   async saveSource(source: Source) {
-    await this.plugin.sourceManager.saveSource(source);
+    const vault = this.plugin.app.vault;
+    const settings = this.plugin.settings;
+
+    if (!source.name) {
+      source.regenerateName();
+    }
+
+    await source.save(vault, settings);
     this.close();
   }
 
   onClose(): void {
     this.component?.$destroy();
-
-    this.closeCallback?.();
   }
 }

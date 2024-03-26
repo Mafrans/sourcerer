@@ -16,13 +16,9 @@
     onDelete(source);
   }
 
-  let title = source.fields.title || "No title";
-  let authors = source.fields.authors ?? [];
-  let authorsString = authors?.map(Person.fromObject).join(", ");
-  if (authors.length > 1) {
-    authorsString =
-      authors.slice(0, -1).join(", ") + " and " + authors.slice(-1);
-  }
+  $: title = source.fields.title || "No title";
+  $: authors = source.fields.authors ?? [];
+  $: authorsString = authors.map(Person.fromObject).join(", ");
 </script>
 
 <li class="source">

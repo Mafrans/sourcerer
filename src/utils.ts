@@ -10,7 +10,7 @@ import { join } from "path";
 
 export function getVaultRootPath(vault: Vault): string | undefined {
   if (vault.adapter instanceof FileSystemAdapter) {
-    return vault.adapter.getBasePath();
+    return;
   } else return undefined;
 }
 

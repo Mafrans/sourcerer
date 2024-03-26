@@ -5,39 +5,45 @@ import { ReferenceWidget } from "../widgets/ReferenceWidget";
 import { Sourcerer } from "../../Sourcerer";
 import { Source } from "../../Source";
 import { BibliographyWidget } from "../widgets/BibliographyWidget";
-import { getCiteStyle } from "../../CiteStyle";
+import { CiteStyle, getCiteStyle } from "../../CiteStyle";
+import { getSource, sources as sourceStore } from "../../store/sources";
+import { get } from "svelte/store";
+import { parseYaml } from "obsidian";
 
 export function makeReferenceState(
   plugin: Sourcerer
 ): StateField<DecorationSet> {
+  let unsubscribe = () => {};
+
   const state = StateField.define<DecorationSet>({
     create() {
       return Decoration.none;
     },
-    update(value, tr) {
-      const builder = new RangeSetBuilder<Decoration>();
-      const selection = tr.state.selection?.main;
 
+    update(value, tr) {
       const activeFile = plugin.app.workspace.getActiveFile();
       if (activeFile == null) return value;
 
-      const metadata = plugin.app.metadataCache.getFileCache(activeFile);
-      const citeStyle = getCiteStyle(
-        metadata?.frontmatter?.["cite-style"] ?? ""
-      );
+      const builder = new RangeSetBuilder<Decoration>();
+      const selection = tr.state.selection?.main;
+      const doc = tr.state.doc;
+      const frontmatter =
+        plugin.app.metadataCache.getFileCache(activeFile)?.frontmatter;
+
+      const citeStyle = getCiteStyle(frontmatter?.["cite-style"] ?? "");
       if (citeStyle == null) return value;
 
-      let sources: Source[] = [];
+      let citations: Source[] = [];
       syntaxTree(tr.state).iterate({
         enter(node) {
           const content = tr.state.sliceDoc(node.from, node.to);
 
           if (node.type.name === "hmd-internal-link") {
-            const source = plugin.sourceManager.getSource(content);
+            const source = getSource(content);
             if (source == null) return;
 
-            if (!sources.includes(source)) {
-              sources.push(source);
+            if (!citations.includes(source)) {
+              citations.push(source);
             }
 
             const from = node.from - 2; // account for the opening brackets
@@ -50,9 +56,9 @@ export function makeReferenceState(
               to,
               Decoration.replace({
                 widget: new ReferenceWidget(
-                  sources.indexOf(source),
+                  citations.indexOf(source),
                   source,
-                  citeStyle
+                  citeStyle!
                 ),
               })
             );
@@ -70,7 +76,7 @@ export function makeReferenceState(
             decoration = Decoration.mark({ class: "cm-inline-code" });
           } else {
             decoration = Decoration.replace({
-              widget: new BibliographyWidget(sources, citeStyle),
+              widget: new BibliographyWidget(citations, citeStyle),
               block: true,
             });
           }
