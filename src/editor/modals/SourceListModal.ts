@@ -1,27 +1,51 @@
 import { Modal } from "obsidian";
 import { Sourcerer } from "../../Sourcerer";
-import { AddSourceModal } from "./AddSourceModal";
-import { Person } from "../../Person";
-import { TemplateResult, html, render } from "lit";
+import { EditSourceModal } from "./EditSourceModal";
+import SourceList from "../Components/SourceList.svelte";
+import { Source } from "../../Source";
+import { DeleteSourceModal } from "./DeleteSourceModal";
 
 export class SourceListModal extends Modal {
   private plugin: Sourcerer;
-  private addSourceModal: AddSourceModal;
+  private editSourceModal: EditSourceModal;
+  private deleteSourceModal: DeleteSourceModal;
+  private component?: SourceList;
 
   constructor(plugin: Sourcerer) {
     super(plugin.app);
     this.plugin = plugin;
-    this.addSourceModal = new AddSourceModal(plugin);
+    this.editSourceModal = new EditSourceModal(plugin);
+    this.deleteSourceModal = new DeleteSourceModal(plugin);
     this.setTitle("Sources");
   }
 
   onOpen() {
-    render(
-      html` <x-source-list
-        .sources=${this.plugin.sourceManager.sources}
-        @add-source=${() => this.addSourceModal.open()}
-      ></x-source-list>`,
-      this.contentEl
-    );
+    this.component?.$destroy();
+    this.component = new SourceList({
+      target: this.contentEl,
+      props: {
+        sources: this.plugin.sourceManager.sources,
+        onAddSource: () => this.editSourceModal.open(),
+        onEditSource: (source: Source) =>
+          this.editSourceModal.open(source, () => this.refresh()),
+        onDeleteSource: (source: Source) =>
+          this.deleteSourceModal.open(source, () => this.refresh()),
+      },
+    });
+  }
+
+  refresh(): void {
+    console.log("Refreshing source list", this.plugin.sourceManager.sources);
+    this.component?.$set({ sources: this.plugin.sourceManager.sources });
+  }
+
+  addSource(source: Source) {
+    this.close();
+    this.plugin.sourceManager.addSource(source);
+    this.editSourceModal.open(source, () => this.refresh());
+  }
+
+  onClose(): void {
+    this.component?.$destroy();
   }
 }

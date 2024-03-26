@@ -10,7 +10,7 @@ import { Person } from "./Person";
 import { getAbsolutePath } from "./utils";
 import { join } from "path";
 
-type SourceFields = {
+export type SourceFields = {
   title?: string;
   booktitle?: string;
   annote?: string;
@@ -26,7 +26,7 @@ type SourceFields = {
   doi?: URL;
 
   address?: string;
-  author?: Person[];
+  authors?: Person[];
   editor?: Person[];
   institution?: string;
   organization?: string;
@@ -40,7 +40,7 @@ type SourceFields = {
 };
 
 export class Source {
-  public readonly name: string;
+  public name: string;
   public readonly fields: SourceFields;
 
   constructor(fields: SourceFields = {}, name?: string) {
@@ -48,8 +48,16 @@ export class Source {
     this.name = name ?? this.generateName();
   }
 
+  public regenerateName() {
+    this.name = this.name || this.generateName();
+  }
+
+  isValid() {
+    return this.name != null && this.name.length >= 1;
+  }
+
   private generateName(): string {
-    const { title, author, year } = this.fields;
+    const { title, authors: author, year } = this.fields;
     let name = "";
 
     if (author != null && author.length >= 1) {
@@ -74,7 +82,8 @@ export class Source {
 
     authors.textContent =
       (
-        this.fields.author?.map((it) => `${it.lastName}, ${it.firstName}`) ?? []
+        this.fields.authors?.map((it) => `${it.lastName}, ${it.firstName}`) ??
+        []
       ).join(" and ") + ", ";
 
     title.textContent = this.fields.title ?? "";

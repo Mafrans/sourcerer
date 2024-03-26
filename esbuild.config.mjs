@@ -1,4 +1,6 @@
 import esbuild from "esbuild";
+import esbuildSvelte from "esbuild-svelte";
+import sveltePreprocess from "svelte-preprocess";
 import process from "process";
 import builtins from "builtin-modules";
 import fs from "fs";
@@ -13,11 +15,16 @@ fs.copyFileSync("manifest.json", "dist/manifest.json");
 fs.copyFileSync("versions.json", "dist/versions.json");
 
 const context = await esbuild.context({
+  plugins: [
+    esbuildSvelte({
+      compilerOptions: { css: true },
+      preprocess: sveltePreprocess(),
+    }),
+  ],
   entryPoints: ["main.ts", "styles.css"],
   bundle: true,
   external: [
     "obsidian",
-    "app://obsidian.md/app.css",
     "electron",
     "@codemirror/autocomplete",
     "@codemirror/collab",

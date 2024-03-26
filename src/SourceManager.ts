@@ -24,21 +24,42 @@ export class SourceManager {
     }
   }
 
+  public deleteSourceFile(name: string): void {
+    const {
+      app: { vault },
+      settings: { sourceDir },
+    } = this.plugin;
+
+    const file = vault.getFileByPath(join(sourceDir, `${name}.md`));
+    if (file != null && this.fileIsSource(file)) {
+      this.removeSource(name);
+      vault.delete(file);
+    }
+  }
+
   public async saveSource(source: Source): Promise<void> {
     const {
       app: { vault, fileManager },
       settings: { sourceDir },
     } = this.plugin;
 
+    source.regenerateName();
+
+    if (!source.isValid()) {
+      throw new Error("Source is not valid");
+    }
+
     const path = join(sourceDir, `${source.name}.md`);
     let file = vault.getFileByPath(path);
 
     await vault.createFolder(sourceDir).catch(() => /* Do nothing */ {});
     if (file == null) {
-      file = await vault.create(path, "");
+      const absolutePath = join(vault.getRoot().path, path);
+      console.log(absolutePath);
+      file = await vault.create(absolutePath, "");
     }
 
-    fileManager.processFrontMatter(file, (fm) =>
+    await fileManager.processFrontMatter(file, (fm) =>
       Object.assign(fm, source.fields)
     );
   }

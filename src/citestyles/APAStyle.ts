@@ -3,7 +3,7 @@ import { Source } from "../Source";
 
 export class APAStyle implements CiteStyle {
   cite(source: Source, index: number): HTMLElement {
-    const { pages, author, year } = source.fields;
+    const { pages, authors: author, year } = source.fields;
     const element = document.createElement("span");
 
     const authors = author?.map((it) => it.lastName);

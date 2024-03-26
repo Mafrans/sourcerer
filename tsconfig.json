@@ -14,9 +14,7 @@
     "jsx": "react-jsx",
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
-    "experimentalDecorators": true,
-    "useDefineForClassFields": false,
     "allowJs": true,
-    "types": ["node"]
+    "types": ["svelte", "node"]
   }
 }
