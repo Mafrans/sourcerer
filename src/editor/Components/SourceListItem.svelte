@@ -2,7 +2,7 @@
   import { LucidePencil, LucideTrash } from "lucide-svelte";
   import { Source } from "../../Source";
   import MiniButton from "./MiniButton.svelte";
-  import { Person } from "../../Person";
+  import { formatName, nameToString, parseName } from "../../names";
 
   export let source: Source;
   export let onEdit: (source: Source) => void;
@@ -17,14 +17,13 @@
   }
 
   $: title = source.fields.title || "No title";
-  $: authors = source.fields.authors ?? [];
-  $: authorsString = authors.map(Person.fromObject).join(", ");
+  $: authors = source.fields.authors.map(parseName);
 </script>
 
 <li class="source">
   <div class="content">
     <div class="title">{title}</div>
-    <div class="authors">{authorsString}</div>
+    <div class="authors">{authors.map(formatName).join(" & ")}</div>
   </div>
 
   <div>

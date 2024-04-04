@@ -1,21 +1,20 @@
 import { CiteStyle } from "../CiteStyle";
-import { Source } from "../Source";
+import { Source, renderSource } from "../Source";
 
 export class APAStyle implements CiteStyle {
   cite(source: Source, index: number): HTMLElement {
-    const { pages, authors: author, year } = source.fields;
+    const { pages, authors, year } = source.fields;
     const element = document.createElement("span");
+    const lastNames = authors.map((it) => it[1]);
 
-    const authors = author?.map((it) => it.lastName);
-
-    if (author && year && pages) {
-      element.textContent = `(${authors?.join(" & ")}, ${year}, p. ${pages.join(
-        "-"
-      )})`;
-    } else if (author && year) {
-      element.textContent = `${authors?.join(" and ")} (${year})`;
-    } else if (author) {
-      element.textContent = `${authors?.join(" and ")}`;
+    if (lastNames && year && pages) {
+      element.textContent = `(${lastNames.join(
+        " & "
+      )}, ${year}, p. ${pages.join("-")})`;
+    } else if (lastNames && year) {
+      element.textContent = `${lastNames.join(" and ")} (${year})`;
+    } else if (lastNames) {
+      element.textContent = `${lastNames.join(" and ")}`;
     } else {
       element.textContent = `No author`;
     }
@@ -31,7 +30,7 @@ export class APAStyle implements CiteStyle {
       const row = document.createElement("tr");
       const cell = document.createElement("td");
 
-      cell.appendChild(source.render());
+      cell.appendChild(renderSource(source));
 
       row.appendChild(cell);
       table.appendChild(row);

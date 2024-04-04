@@ -1,7 +1,8 @@
 import { App, Modal, Notice } from "obsidian";
 import { Sourcerer } from "../../Sourcerer";
-import { Source } from "../../Source";
+import { Source, getSourceFile, newSource } from "../../Source";
 import Dialog from "../Components/Dialog.svelte";
+import assert from "assert";
 
 export class DeleteSourceModal extends Modal {
   private plugin: Sourcerer;
@@ -16,7 +17,9 @@ export class DeleteSourceModal extends Modal {
   }
 
   open(source?: Source): void {
-    this.source = source ?? new Source();
+    assert(source != null, "Source must be provided");
+
+    this.source = source;
     super.open();
   }
 
@@ -40,7 +43,7 @@ export class DeleteSourceModal extends Modal {
       settings,
     } = this.plugin;
 
-    const file = source.getFile(vault, settings);
+    const file = getSourceFile(vault, settings, source);
     if (file != null) {
       vault.delete(file);
     }

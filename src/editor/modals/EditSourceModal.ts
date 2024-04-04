@@ -1,7 +1,8 @@
 import { App, Modal, Notice } from "obsidian";
 import { Sourcerer } from "../../Sourcerer";
-import { Source } from "../../Source";
+import { Source, emptySource, newSource, saveSource } from "../../Source";
 import EditSourceForm from "../Components/EditSourceForm.svelte";
+import assert from "assert";
 
 export class EditSourceModal extends Modal {
   private plugin: Sourcerer;
@@ -15,7 +16,7 @@ export class EditSourceModal extends Modal {
   }
 
   open(source?: Source): void {
-    this.source = source ?? new Source();
+    this.source = source ?? emptySource();
     super.open();
   }
 
@@ -31,14 +32,9 @@ export class EditSourceModal extends Modal {
   }
 
   async saveSource(source: Source) {
-    const vault = this.plugin.app.vault;
-    const settings = this.plugin.settings;
+    const { app, settings } = this.plugin;
 
-    if (!source.name) {
-      source.regenerateName();
-    }
-
-    await source.save(vault, settings);
+    saveSource(app, settings, source);
     this.close();
   }
 

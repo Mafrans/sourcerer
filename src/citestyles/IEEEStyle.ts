@@ -1,5 +1,5 @@
 import { CiteStyle } from "../CiteStyle";
-import { Source } from "../Source";
+import { Source, renderSource } from "../Source";
 
 export class IEEEStyle implements CiteStyle {
   cite(source: Source, index: number): HTMLElement {
@@ -19,7 +19,7 @@ export class IEEEStyle implements CiteStyle {
       const sourceCell = document.createElement("td");
 
       indexCell.textContent = `[${i + 1}]`;
-      sourceCell.appendChild(source.render());
+      sourceCell.appendChild(renderSource(source));
 
       row.appendChild(indexCell);
       row.appendChild(sourceCell);

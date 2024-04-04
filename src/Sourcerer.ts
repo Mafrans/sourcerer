@@ -13,7 +13,7 @@ import { makeReferenceState } from "./editor/state/ReferenceState";
 import { makeBibliographyProcessor } from "./editor/postprocessor/BibliographyProcessor";
 import { makeReferenceProcessor } from "./editor/postprocessor/ReferenceProcessor";
 import { basename } from "path";
-import { Source } from "./Source";
+import { Source, loadSource } from "./Source";
 
 export const APP_NAME = "Sourcerer";
 
@@ -29,7 +29,7 @@ export class Sourcerer extends Plugin {
     const vault = this.app.vault;
     vault.on("create", async (file) => {
       if (!fileIsSource(vault, this.settings, file)) return;
-      const source = await Source.load(vault, file as TFile);
+      const source = await loadSource(vault, file as TFile);
       if (source != null) {
         addSource(source);
       }
@@ -37,7 +37,7 @@ export class Sourcerer extends Plugin {
 
     vault.on("modify", async (file) => {
       if (!fileIsSource(vault, this.settings, file)) return;
-      const source = await Source.load(vault, file as TFile);
+      const source = await loadSource(vault, file as TFile);
       if (source != null) {
         updateSource(source);
       }
@@ -45,7 +45,7 @@ export class Sourcerer extends Plugin {
 
     vault.on("rename", async (file, oldPath) => {
       if (!fileIsSource(vault, this.settings, file)) return;
-      const source = await Source.load(vault, file as TFile);
+      const source = await loadSource(vault, file as TFile);
       if (source != null) {
         removeSource(basename(oldPath, ".md"));
         addSource(source);

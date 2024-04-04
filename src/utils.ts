@@ -10,7 +10,7 @@ import { join } from "path";
 
 export function getVaultRootPath(vault: Vault): string | undefined {
   if (vault.adapter instanceof FileSystemAdapter) {
-    return;
+    return vault.adapter.getBasePath();
   } else return undefined;
 }
 
@@ -27,4 +27,8 @@ export function parseFrontMatter(content: String) {
   }
 
   return parseYaml(match.groups?.fm ?? "");
+}
+
+export function formatFileName(name: string) {
+  return name.replace(/[<>:"/\|?*\x00-\x1F]/g, "-");
 }

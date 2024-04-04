@@ -1,12 +1,18 @@
 <script lang="ts">
   import { Source } from "../../Source";
+  import { formatName, nameToString, parseName } from "../../names";
   import AuthorInputList from "./AuthorInputList.svelte";
 
   export let source: Source;
   export let onCancel: () => void;
   export let onSubmit: (source: Source) => void;
 
+  let title = source.fields.title || "";
+  let authors = source.fields.authors.map(parseName);
+
   function handleSubmit() {
+    source.fields.title = title;
+    source.fields.authors = authors.map(nameToString);
     onSubmit(source);
   }
 </script>
@@ -14,11 +20,11 @@
 <div class="edit-source-form">
   <label>
     Title
-    <input type="text" bind:value={source.fields.title} />
+    <input required type="text" bind:value={title} />
   </label>
 
   <div>
-    <AuthorInputList bind:authors={source.fields.authors} />
+    <AuthorInputList bind:authors />
   </div>
 
   <div class="buttons">

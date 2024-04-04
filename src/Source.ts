@@ -1,18 +1,18 @@
-import fs, { mkdirSync } from "fs";
+import { App, TFile, TFolder, Vault, parseYaml, stringifyYaml } from "obsidian";
 import {
-  TAbstractFile,
-  TFile,
-  Vault,
-  parseYaml,
-  stringifyYaml,
-} from "obsidian";
-import { Person } from "./Person";
-import { getAbsolutePath, getVaultRootPath } from "./utils";
+  Name,
+  formatName,
+  formatShortName,
+  nameToString,
+  parseName,
+} from "./names";
+import { formatFileName, getVaultRootPath } from "./utils";
 import { basename, join } from "path";
 import { Settings } from "./Settings";
+import assert from "assert";
 
 export type SourceFields = {
-  title?: string;
+  title: string;
   booktitle?: string;
   annote?: string;
   note?: string;
@@ -27,8 +27,8 @@ export type SourceFields = {
   doi?: URL;
 
   address?: string;
-  authors?: Person[];
-  editor?: Person[];
+  authors: string[];
+  editor?: string[];
   institution?: string;
   organization?: string;
   school?: string;
@@ -40,101 +40,138 @@ export type SourceFields = {
   year?: number;
 };
 
-export class Source {
-  public name: string;
-  public readonly fields: SourceFields;
+export type Source = {
+  name: string;
+  fields: SourceFields;
+};
 
-  constructor(fields: SourceFields = {}, name?: string) {
-    this.fields = fields;
-    this.name = name ?? this.generateName();
+/**
+ * Create a new empty source.
+ * Empty sources are not valid and should not be saved.
+ */
+export function emptySource(): Source {
+  return { name: "", fields: { title: "", authors: [] } };
+}
+
+export function newSource(fields: SourceFields): Source {
+  assert(fields.title, "Source must have a title");
+  assert(fields.authors.length > 0, "Source must have at least one author");
+
+  return {
+    name: makeSourceName(fields.title, fields.authors, fields.year),
+    fields,
+  };
+}
+
+function makeSourceName(
+  title: string,
+  authors: string[],
+  year?: number
+): string {
+  let name = formatShortName(parseName(authors[0]));
+  if (authors.length > 1) {
+    name += " et al.";
+  }
+  if (year) {
+    name += ` ${year}`;
+  }
+  name += `, ${title}`;
+
+  return formatFileName(name);
+}
+
+function getSourceFilePath(settings: Settings, source: Source): string {
+  assert(settings.sourceDir, "Source directory is not set");
+  return join(settings.sourceDir, `${source.name}.md`);
+}
+
+export function getSourceFile(
+  vault: Vault,
+  settings: Settings,
+  source: Source
+): TFile | null {
+  const path = getSourceFilePath(settings, source);
+  const file = vault.getAbstractFileByPath(path);
+
+  console.log({ file, path });
+
+  assert(!(file instanceof TFolder), `Source cannot be a folder: ${path}`);
+  return file as TFile | null;
+}
+
+export async function saveSource(
+  app: App,
+  settings: Settings,
+  source: Source
+): Promise<void> {
+  const { vault, fileManager } = app;
+  if (source.name == "") {
+    source.name = makeSourceName(source.fields.title, source.fields.authors);
   }
 
-  public regenerateName() {
-    this.name = this.name || this.generateName();
+  let sourceDir = vault.getFolderByPath(settings.sourceDir);
+  if (sourceDir == null) {
+    sourceDir = await vault.createFolder(settings.sourceDir);
   }
 
-  private getFilePath(vault: Vault, settings: Settings): string {
-    return join(
-      getVaultRootPath(vault) ?? "",
-      settings.sourceDir,
-      `${this.name}.md`
+  console.log(getSourceFilePath(settings, source));
+  const content = stringifyYaml(source.fields);
+  let file = getSourceFile(vault, settings, source);
+  if (file == null) {
+    file = await vault.create(join(sourceDir.path, source.name) + ".md", "");
+  }
+
+  await vault.modify(file, "---\n" + content + "\n---");
+
+  if (settings.autoRename) {
+    const newName = makeSourceName(
+      source.fields.title,
+      source.fields.authors,
+      source.fields.year
     );
-  }
 
-  public getFile(vault: Vault, settings: Settings): TFile | null {
-    return vault.getFileByPath(this.getFilePath(vault, settings));
-  }
-
-  public async save(vault: Vault, settings: Settings): Promise<void> {
-    const path = this.getFilePath(vault, settings);
-    const content = stringifyYaml(this.fields);
-
-    const sourceDir = vault.getFolderByPath(settings.sourceDir);
-    if (sourceDir == null) {
-      await vault.createFolder(settings.sourceDir);
+    if (newName !== source.name) {
+      fileManager.renameFile(file, join(sourceDir.path, newName) + ".md");
     }
+  }
+}
 
-    let file = vault.getFileByPath(path);
-    if (file == null) {
-      file = await vault.create(path, "");
-    }
+export async function loadSource(
+  vault: Vault,
+  file: TFile
+): Promise<Source | null> {
+  const content = await vault.read(file);
+  const front = content.split("---")?.[1];
 
-    await vault.modify(file, "---\n" + content + "\n---");
+  if (front == null) {
+    return null;
   }
 
-  public static async load(vault: Vault, file: TFile): Promise<Source | null> {
-    const content = await vault.read(file);
-    const front = content.split("---")?.[1];
+  const fields = parseYaml(front) as SourceFields;
+  const name = basename(file.name, ".md");
 
-    if (front == null) {
-      return null;
-    }
+  return { name, fields };
+}
 
-    const fields = parseYaml(front) as SourceFields;
-    const name = basename(file.name, ".md");
+export function renderSource(source: Source): HTMLDivElement {
+  const { title, authors } = source.fields;
 
-    return new Source(fields, name);
-  }
+  const containerEl = document.createElement("div");
+  const authorsEl = document.createElement("span");
+  const titleEl = document.createElement("i");
 
-  isValid() {
-    return this.name != null && this.name.length >= 1;
-  }
+  authorsEl.textContent =
+    authors.map(parseName).map(formatName).join(" and ") + ", ";
+  titleEl.textContent = title;
 
-  private generateName(): string {
-    const { title, authors: author, year } = this.fields;
-    let name = "";
+  containerEl.appendChild(authorsEl);
+  containerEl.appendChild(titleEl);
 
-    if (author != null && author.length >= 1) {
-      name += author[0].firstName.toLowerCase();
-    }
+  return containerEl;
+}
 
-    if (year != null) {
-      name += year;
-    }
-
-    if (title != null) {
-      name += title.split(" ")[0].toLowerCase();
-    }
-
-    return name;
-  }
-
-  public render(): HTMLDivElement {
-    const container = document.createElement("div");
-    const authors = document.createElement("span");
-    const title = document.createElement("i");
-
-    authors.textContent =
-      (
-        this.fields.authors?.map((it) => `${it.lastName}, ${it.firstName}`) ??
-        []
-      ).join(" and ") + ", ";
-
-    title.textContent = this.fields.title ?? "";
-
-    container.appendChild(authors);
-    container.appendChild(title);
-
-    return container;
-  }
+export function parseSource(yaml: string): Source {
+  const fields = parseYaml(yaml);
+  fields.authors = fields.authors.map(parseName);
+  return { name: "", fields };
 }

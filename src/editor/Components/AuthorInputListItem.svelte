@@ -1,15 +1,15 @@
 <script lang="ts">
   import { LucideX } from "lucide-svelte";
-  import { Person } from "../../Person";
+  import { Name } from "../../names";
   import MiniButton from "./MiniButton.svelte";
 
-  export let author: Person;
+  export let author: Name;
   export let onRemove: () => void;
 </script>
 
 <li>
-  <input type="text" bind:value={author.firstName} placeholder="First name" />
-  <input type="text" bind:value={author.lastName} placeholder="Last name" />
+  <input type="text" bind:value={author[0]} placeholder="First name" />
+  <input type="text" bind:value={author[1]} placeholder="Last name" />
   <MiniButton on:click={onRemove} icon={LucideX} />
 </li>
 

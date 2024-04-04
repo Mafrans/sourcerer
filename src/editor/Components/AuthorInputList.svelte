@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { Person } from "../../Person";
+  import { Name, emptyName } from "../../names";
   import AuthorInputListItem from "./AuthorInputListItem.svelte";
 
-  export let authors: Person[] = [];
+  export let authors: Name[] = [];
 
   function handleAddAuthor() {
-    authors = [...authors, new Person()];
+    authors = [...authors, emptyName()];
   }
 
   function handleRemoveAuthor(index: number) {
