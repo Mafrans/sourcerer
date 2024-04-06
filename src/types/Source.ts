@@ -5,40 +5,13 @@ import {
   formatShortName,
   nameToString,
   parseName,
-} from "./names";
-import { formatFileName, getVaultRootPath } from "./utils";
+} from "../names";
+import { formatFileName, getVaultRootPath } from "../utils";
 import { basename, join } from "path";
-import { Settings } from "./Settings";
+import { Settings } from "../Settings";
 import assert from "assert";
-
-export type SourceFields = {
-  title: string;
-  booktitle?: string;
-  annote?: string;
-  note?: string;
-  howpublished?: string;
-
-  journal?: string;
-  edition?: string;
-  volume?: number;
-  chapter?: number;
-  series?: string;
-  pages?: number[];
-  doi?: URL;
-
-  address?: string;
-  authors: string[];
-  editor?: string[];
-  institution?: string;
-  organization?: string;
-  school?: string;
-  publisher?: string;
-  email?: string;
-
-  month?: number;
-  number?: number;
-  year?: number;
-};
+import { SourceFields } from "./SourceFields";
+import moment from "moment";
 
 export type Source = {
   name: string;
@@ -58,7 +31,7 @@ export function newSource(fields: SourceFields): Source {
   assert(fields.authors.length > 0, "Source must have at least one author");
 
   return {
-    name: makeSourceName(fields.title, fields.authors, fields.year),
+    name: makeSourceName(fields.title, fields.authors, fields.date),
     fields,
   };
 }
@@ -66,9 +39,10 @@ export function newSource(fields: SourceFields): Source {
 function makeSourceName(
   title: string,
   authors: string[],
-  year?: number
+  date?: string
 ): string {
   let name = formatShortName(parseName(authors[0]));
+  let year = moment(date).year();
   if (authors.length > 1) {
     name += " et al.";
   }
@@ -127,7 +101,7 @@ export async function saveSource(
     const newName = makeSourceName(
       source.fields.title,
       source.fields.authors,
-      source.fields.year
+      source.fields.date
     );
 
     if (newName !== source.name) {

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Source } from "../../Source";
+  import { Source } from "../../types/Source";
   import { sources } from "../../store/sources";
   import SourceListItem from "./SourceListItem.svelte";
 
@@ -12,7 +12,7 @@
   <ul>
     {#each $sources as source}
       <SourceListItem
-        source={source}
+        {source}
         onEdit={onEditSource}
         onDelete={onDeleteSource}
       />

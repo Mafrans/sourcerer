@@ -1,8 +1,8 @@
 import { Modal } from "obsidian";
 import { Sourcerer } from "../../Sourcerer";
 import { EditSourceModal } from "./EditSourceModal";
-import SourceList from "../Components/SourceList.svelte";
-import { Source } from "../../Source";
+import SourceList from "../components/SourceList.svelte";
+import { Source } from "../../types/Source";
 import { DeleteSourceModal } from "./DeleteSourceModal";
 
 export class SourceListModal extends Modal {

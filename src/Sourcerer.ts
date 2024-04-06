@@ -13,7 +13,7 @@ import { makeReferenceState } from "./editor/state/ReferenceState";
 import { makeBibliographyProcessor } from "./editor/postprocessor/BibliographyProcessor";
 import { makeReferenceProcessor } from "./editor/postprocessor/ReferenceProcessor";
 import { basename } from "path";
-import { Source, loadSource } from "./Source";
+import { Source, loadSource } from "./types/Source";
 
 export const APP_NAME = "Sourcerer";
 

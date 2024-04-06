@@ -1,7 +1,7 @@
 import { App, Modal, Notice } from "obsidian";
 import { Sourcerer } from "../../Sourcerer";
-import { Source, getSourceFile, newSource } from "../../Source";
-import Dialog from "../Components/Dialog.svelte";
+import { Source, getSourceFile, newSource } from "../../types/Source";
+import Dialog from "../components/Dialog.svelte";
 import assert from "assert";
 
 export class DeleteSourceModal extends Modal {

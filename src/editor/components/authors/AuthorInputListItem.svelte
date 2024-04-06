@@ -1,7 +1,7 @@
 <script lang="ts">
   import { LucideX } from "lucide-svelte";
-  import { Name } from "../../names";
-  import MiniButton from "./MiniButton.svelte";
+  import { Name } from "../../../names";
+  import MiniButton from "../MiniButton.svelte";
 
   export let author: Name;
   export let onRemove: () => void;

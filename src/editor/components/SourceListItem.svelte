@@ -1,6 +1,6 @@
 <script lang="ts">
   import { LucidePencil, LucideTrash } from "lucide-svelte";
-  import { Source } from "../../Source";
+  import { Source } from "../../types/Source";
   import MiniButton from "./MiniButton.svelte";
   import { formatName, nameToString, parseName } from "../../names";
 

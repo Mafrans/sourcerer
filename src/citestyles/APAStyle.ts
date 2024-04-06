@@ -1,5 +1,5 @@
 import { CiteStyle } from "../CiteStyle";
-import { Source, renderSource } from "../Source";
+import { Source, renderSource } from "../types/Source";
 
 export class APAStyle implements CiteStyle {
   cite(source: Source, index: number): HTMLElement {

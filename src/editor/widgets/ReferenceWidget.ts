@@ -1,5 +1,5 @@
 import { EditorView, WidgetType } from "@codemirror/view";
-import { Source } from "../../Source";
+import { Source } from "../../types/Source";
 import { CiteStyle } from "../../CiteStyle";
 
 export class ReferenceWidget extends WidgetType {

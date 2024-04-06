@@ -1,5 +1,5 @@
 import { basename, join } from "path";
-import { Source } from "../Source";
+import { Source } from "../types/Source";
 import { Sourcerer } from "../Sourcerer";
 import { TAbstractFile, TFile, Vault } from "obsidian";
 import { Unsubscriber, Writable, get, writable } from "svelte/store";

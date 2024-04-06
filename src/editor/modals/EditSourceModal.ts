@@ -1,7 +1,7 @@
 import { App, Modal, Notice } from "obsidian";
 import { Sourcerer } from "../../Sourcerer";
-import { Source, emptySource, newSource, saveSource } from "../../Source";
-import EditSourceForm from "../Components/EditSourceForm.svelte";
+import { Source, emptySource, newSource, saveSource } from "../../types/Source";
+import EditSourceForm from "../components/EditSourceForm.svelte";
 import assert from "assert";
 
 export class EditSourceModal extends Modal {

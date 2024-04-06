@@ -1,4 +1,4 @@
-import { Source } from "./Source";
+import { Source } from "./types/Source";
 import { APAStyle } from "./citestyles/APAStyle";
 import { IEEEStyle } from "./citestyles/IEEEStyle";
 

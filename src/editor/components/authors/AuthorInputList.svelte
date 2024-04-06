@@ -1,5 +1,7 @@
 <script lang="ts">
-  import { Name, emptyName } from "../../names";
+  import { LucideUser } from "lucide-svelte";
+  import { Name, emptyName } from "../../../names";
+  import InputPanel from "../input/InputPanel.svelte";
   import AuthorInputListItem from "./AuthorInputListItem.svelte";
 
   export let authors: Name[] = [];
@@ -13,15 +15,17 @@
   }
 </script>
 
-<div class="authors">
-  <div class="title">Authors</div>
+<InputPanel title="Authors">
   <ul>
     {#each authors as author, i}
       <AuthorInputListItem {author} onRemove={() => handleRemoveAuthor(i)} />
     {/each}
+    {#if authors.length === 0}
+      <li class="list-empty">No authors</li>
+    {/if}
   </ul>
   <button on:click={handleAddAuthor}>Add author</button>
-</div>
+</InputPanel>
 
 <style>
   ul {
@@ -33,16 +37,12 @@
     margin: 0;
   }
 
-  .title {
-    font-weight: bold;
-    margin-bottom: var(--size-4-2);
-    font-size: var(--font-ui-medium);
+  .list-empty {
+    font-size: var(--font-ui-small);
   }
 
   button {
-    display: flex;
-    justify-content: flex-end;
     gap: var(--size-4-2);
-    margin-top: var(--size-4-2);
+    margin-top: var(--size-4-3);
   }
 </style>

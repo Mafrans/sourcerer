@@ -3,7 +3,7 @@ import { Extension, RangeSetBuilder, StateField } from "@codemirror/state";
 import { Decoration, DecorationSet, EditorView } from "@codemirror/view";
 import { ReferenceWidget } from "../widgets/ReferenceWidget";
 import { Sourcerer } from "../../Sourcerer";
-import { Source } from "../../Source";
+import { Source } from "../../types/Source";
 import { BibliographyWidget } from "../widgets/BibliographyWidget";
 import { CiteStyle, getCiteStyle } from "../../CiteStyle";
 import { getSource, sources as sourceStore } from "../../store/sources";

@@ -32,3 +32,7 @@ export function parseFrontMatter(content: String) {
 export function formatFileName(name: string) {
   return name.replace(/[<>:"/\|?*\x00-\x1F]/g, "-");
 }
+
+export function uid(): string {
+  return Math.random().toString(36).substring(2, 8);
+}
