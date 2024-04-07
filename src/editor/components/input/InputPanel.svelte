@@ -48,6 +48,11 @@
     font-size: var(--font-ui-medium);
   }
 
+  summary:focus-visible {
+    border-radius: var(--radius-s);
+    box-shadow: 0 0 0 1.5px var(--background-modifier-border-focus);
+  }
+
   .container[open] > summary {
     margin-bottom: var(--size-4-3);
   }

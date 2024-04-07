@@ -31,6 +31,6 @@
   }
 
   .mini-button:focus-visible {
-    box-shadow: 0 0 0 3px var(--background-modifier-border-focus);
+    box-shadow: 0 0 0 1.5px var(--background-modifier-border-focus);
   }
 </style>
