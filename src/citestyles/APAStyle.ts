@@ -1,11 +1,13 @@
+import moment from "moment";
 import { CiteStyle } from "../CiteStyle";
 import { Source, renderSource } from "../types/Source";
 
 export class APAStyle implements CiteStyle {
   cite(source: Source, index: number): HTMLElement {
-    const { pages, authors, year } = source.fields;
+    const { pages, authors, date } = source.fields;
     const element = document.createElement("span");
     const lastNames = authors.map((it) => it[1]);
+    const year = date != null ? moment(date).year() : undefined;
 
     if (lastNames && year && pages) {
       element.textContent = `(${lastNames.join(
