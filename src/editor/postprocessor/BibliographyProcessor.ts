@@ -1,12 +1,14 @@
 import { MarkdownPostProcessor } from "obsidian";
 import { Sourcerer } from "../../Sourcerer";
 import { getCiteStyle } from "../../CiteStyle";
+import { get } from "svelte/store";
+import { sources as sourceStore } from "../../store/sources";
 
 export function makeBibliographyProcessor(
   plugin: Sourcerer
 ): MarkdownPostProcessor {
   return (element, context) => {
-    const sources = plugin.sourceManager.sources;
+    const sources = get(sourceStore);
     const citeStyle = getCiteStyle(context.frontmatter?.["cite-style"] ?? "");
     if (citeStyle == null) return;
 
