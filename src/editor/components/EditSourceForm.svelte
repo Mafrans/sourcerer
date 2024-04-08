@@ -13,6 +13,16 @@
   import Input from "./input/Input.svelte";
   import Dropdown from "./input/Dropdown.svelte";
   import InputPanel from "./input/InputPanel.svelte";
+  import BookFields from "./publication-fields/BookFields.svelte";
+  import InBookFields from "./publication-fields/InBookFields.svelte";
+  import InCollectionFields from "./publication-fields/InCollectionFields.svelte";
+  import InProceedingsFields from "./publication-fields/InProceedingsFields.svelte";
+  import ManualFields from "./publication-fields/ManualFields.svelte";
+  import MastersThesisFields from "./publication-fields/MastersThesisFields.svelte";
+  import PhdThesisFields from "./publication-fields/PhdThesisFields.svelte";
+  import ProceedingsFields from "./publication-fields/ProceedingsFields.svelte";
+  import TechreportFields from "./publication-fields/TechreportFields.svelte";
+  import AllFields from "./publication-fields/AllFields.svelte";
 
   export let source: Source;
   export let onCancel: () => void;
@@ -22,6 +32,8 @@
 
   let title = fields.title || "";
   let publicationType = fields.howpublished || "article";
+  let publisher = fields.publisher ?? "";
+  let address = fields.address ?? "";
   let journal = fields.journal ?? "";
   let volume = fields.volume ?? 0;
   let chapter = fields.chapter ?? 0;
@@ -31,17 +43,18 @@
 
   const publicationFields: Record<PublicationType, any> = {
     article: ArticleFields,
-    book: null,
-    inbook: null,
-    incollection: null,
-    inproceedings: null,
-    manual: null,
-    mastersthesis: null,
-    phdthesis: null,
-    proceedings: null,
-    techreport: null,
+    book: BookFields,
+    inbook: InBookFields,
+    incollection: InCollectionFields,
+    conference: InCollectionFields,
+    inproceedings: InProceedingsFields,
+    manual: ManualFields,
+    mastersthesis: MastersThesisFields,
+    phdthesis: PhdThesisFields,
+    proceedings: ProceedingsFields,
+    techreport: TechreportFields,
+    misc: AllFields,
     unpublished: null,
-    misc: null,
   };
 
   $: publicationComponent = publicationFields[publicationType];
@@ -53,6 +66,8 @@
       ...source.fields,
       title,
       howpublished: publicationType,
+      publisher,
+      address,
       journal,
       volume,
       chapter,
@@ -77,7 +92,7 @@
   {#if publicationComponent}
     <InputPanel
       hasPadding={false}
-      title={`${publicationTypes[publicationType]} fields`}
+      title={`${publicationTypes[publicationType]} details`}
     >
       <svelte:component
         this={publicationComponent}

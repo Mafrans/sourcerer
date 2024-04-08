@@ -3,6 +3,7 @@ export const publicationTypes = {
   book: "Book",
   inbook: "In book",
   incollection: "In collection",
+  conference: "Conference",
   inproceedings: "In proceedings",
   manual: "Manual",
   mastersthesis: "Master thesis",
