@@ -98,13 +98,13 @@
   <Input label="Title" type="text" required bind:value={title} />
   <Input label="Publication date" type="date" required bind:value={date} />
 
-  <AuthorInputList bind:authors />
-
   <Dropdown
     label="Publication type"
     options={publicationTypes}
     bind:value={publicationType}
   />
+
+  <AuthorInputList bind:authors />
 
   {#if publicationComponent}
     <InputPanel
