@@ -6,3 +6,4 @@
 </script>
 
 <Input label="School" type="text" required bind:value={school} />
+<Input label="School address" type="text" bind:value={address} />

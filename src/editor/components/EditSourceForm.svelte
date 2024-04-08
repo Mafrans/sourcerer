@@ -31,15 +31,22 @@
   const fields = source.fields;
 
   let title = fields.title || "";
+  let booktitle = fields.booktitle || "";
   let publicationType = fields.howpublished || "article";
   let publisher = fields.publisher ?? "";
   let address = fields.address ?? "";
+  let institution = fields.institution ?? "";
+  let organization = fields.organization ?? "";
+  let school = fields.school ?? "";
   let journal = fields.journal ?? "";
   let volume = fields.volume ?? 0;
+  let edition = fields.edition ?? "";
+  let series = fields.series ?? "";
   let chapter = fields.chapter ?? 0;
   let pages = fields.pages?.map(parsePageRange) ?? [];
   let authors = fields.authors.map(parseName);
   let date = fields.date;
+  let email = fields.email ?? "";
 
   const publicationFields: Record<PublicationType, any> = {
     article: ArticleFields,
@@ -65,15 +72,22 @@
     source.fields = {
       ...source.fields,
       title,
+      booktitle,
       howpublished: publicationType,
       publisher,
       address,
+      institution,
+      organization,
+      school,
       journal,
       volume,
+      edition,
+      series,
       chapter,
       pages: sortedPages.map(formatPageRange),
       authors: authors.map(nameToString),
       date,
+      email,
     };
 
     onSubmit(source);
@@ -83,6 +97,9 @@
 <div class="edit-source-form">
   <Input label="Title" type="text" required bind:value={title} />
   <Input label="Publication date" type="date" required bind:value={date} />
+
+  <AuthorInputList bind:authors />
+
   <Dropdown
     label="Publication type"
     options={publicationTypes}
@@ -96,17 +113,22 @@
     >
       <svelte:component
         this={publicationComponent}
+        bind:booktitle
+        bind:publisher
+        bind:address
+        bind:institution
+        bind:organization
+        bind:school
         bind:journal
         bind:volume
+        bind:edition
+        bind:series
         bind:chapter
+        bind:email
         bind:pages
       />
     </InputPanel>
   {/if}
-
-  <div>
-    <AuthorInputList bind:authors />
-  </div>
 
   <div class="buttons">
     <button on:click={onCancel} class="cancel">Cancel</button>
