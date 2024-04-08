@@ -28,11 +28,24 @@ export class Sourcerer extends Plugin {
   async onload(): Promise<void> {
     this.settingsTab = new SettingsTab(this);
     this.sourceListModal = new SourceListModal(this);
-    this.createFileListeners();
+
+    await this.loadSettings();
+    this.addSettingTab(this.settingsTab);
 
     this.addCommand(makeListSourcesCommand(this));
     this.addCommand(makeReloadSourcesCommand(this));
     this.addCommand(makeNewSourceCommand(this));
+
+    this.registerEditorExtension([makeReferenceState(this)]);
+    this.registerMarkdownPostProcessor(makeBibliographyProcessor(this));
+    this.registerMarkdownPostProcessor(makeReferenceProcessor(this));
+
+    this.addRibbonIcon("book-marked", "Source library", async () => {
+      this.sourceListModal.open();
+    });
+
+    this.registerFrontmatterProperties();
+    this.createFileListeners();
   }
 
   onunload(): void {}
@@ -43,6 +56,20 @@ export class Sourcerer extends Plugin {
 
   async saveSettings() {
     await this.saveData(this.settings);
+  }
+
+  registerFrontmatterProperties() {
+    const properties = {
+      "cite-style": "text",
+    };
+
+    const typeManager = (this.app as any).metadataTypeManager;
+    console.log({ props: typeManager.getAllProperties() });
+    for (const [name, type] of Object.entries(properties)) {
+      if (!typeManager.getPropertyInfo(name)) {
+        typeManager.setType(name, type);
+      }
+    }
   }
 
   async createFileListeners() {
@@ -75,16 +102,6 @@ export class Sourcerer extends Plugin {
     vault.on("delete", (file) => {
       if (!fileIsSource(vault, this.settings, file)) return;
       removeSource(basename(file.path, ".md"));
-    });
-
-    await this.loadSettings();
-    this.addSettingTab(this.settingsTab);
-    this.registerEditorExtension([makeReferenceState(this)]);
-    this.registerMarkdownPostProcessor(makeBibliographyProcessor(this));
-    this.registerMarkdownPostProcessor(makeReferenceProcessor(this));
-
-    this.addRibbonIcon("book-marked", "Source library", async () => {
-      this.sourceListModal.open();
     });
   }
 }
