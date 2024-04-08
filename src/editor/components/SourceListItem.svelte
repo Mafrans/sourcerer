@@ -26,7 +26,7 @@
     <div class="authors">{authors.map(formatName).join(" & ")}</div>
   </div>
 
-  <div>
+  <div class="buttons">
     <MiniButton on:click={handleEdit} icon={LucidePencil} />
     <MiniButton on:click={handleDelete} icon={LucideTrash} />
   </div>
@@ -52,5 +52,10 @@
   .authors {
     font-size: var(--font-ui-small);
     color: var(--text-muted);
+  }
+
+  .buttons {
+    display: flex;
+    gap: var(--size-4-1);
   }
 </style>

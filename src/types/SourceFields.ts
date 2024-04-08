@@ -8,8 +8,9 @@ export type SourceFields = {
   howpublished?: PublicationType;
 
   journal?: string;
-  edition?: string;
+  edition?: number;
   volume?: number;
+  number?: number;
   chapter?: number;
   series?: string;
   pages?: string[];

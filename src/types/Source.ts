@@ -70,8 +70,6 @@ export function getSourceFile(
   const path = getSourceFilePath(settings, source);
   const file = vault.getAbstractFileByPath(path);
 
-  console.log({ file, path });
-
   assert(!(file instanceof TFolder), `Source cannot be a folder: ${path}`);
   return file as TFile | null;
 }

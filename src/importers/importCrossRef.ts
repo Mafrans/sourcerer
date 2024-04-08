@@ -36,6 +36,9 @@ type ImportCrossRefResponse = {
     published: {
       "date-parts": [number, number, number][];
     };
+    volume: string;
+    issue: string;
+    page: string;
   };
 };
 
@@ -47,14 +50,23 @@ export async function importCrossRef(doi: string): Promise<Source | null> {
 
   const { message } = (await res.json()) as ImportCrossRefResponse;
 
+  console.log(message);
+
   const source = emptySource();
   source.abstract = message.abstract;
+  if (message.abstract.startsWith("<jats:p>")) {
+    source.abstract = message.abstract.replace(/<\/?jats:p>/g, "");
+  }
+
   source.fields.doi = message.DOI;
   source.fields.issn = message.ISSN?.[0];
   source.fields.url = message.URL;
   source.fields.title = message.title?.[0];
   source.fields.howpublished = crossRefTypeMap[message.type] ?? "misc";
   source.fields.journal = message["container-title"]?.[0];
+  source.fields.volume = parseInt(message.volume);
+  source.fields.number = parseInt(message.issue);
+  source.fields.pages = [message.page];
   source.fields.authors = message.author
     .map(({ given, family }) => [given, family] as Name)
     .map(nameToString);

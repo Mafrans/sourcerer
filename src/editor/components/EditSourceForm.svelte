@@ -31,22 +31,23 @@
   const fields = source.fields;
 
   let title = fields.title || "";
-  let booktitle = fields.booktitle || "";
+  let booktitle = fields.booktitle;
   let publicationType = fields.howpublished || "article";
-  let publisher = fields.publisher ?? "";
-  let address = fields.address ?? "";
-  let institution = fields.institution ?? "";
-  let organization = fields.organization ?? "";
-  let school = fields.school ?? "";
-  let journal = fields.journal ?? "";
-  let volume = fields.volume ?? 0;
-  let edition = fields.edition ?? "";
-  let series = fields.series ?? "";
-  let chapter = fields.chapter ?? 0;
+  let publisher = fields.publisher;
+  let address = fields.address;
+  let institution = fields.institution;
+  let organization = fields.organization;
+  let school = fields.school;
+  let journal = fields.journal;
+  let volume = fields.volume;
+  let number = fields.number;
+  let edition = fields.edition;
+  let series = fields.series;
+  let chapter = fields.chapter;
   let pages = fields.pages?.map(parsePageRange) ?? [];
   let authors = fields.authors.map(parseName);
   let date = fields.date;
-  let email = fields.email ?? "";
+  let email = fields.email;
 
   const publicationFields: Record<PublicationType, any> = {
     article: ArticleFields,
@@ -81,6 +82,7 @@
       school,
       journal,
       volume,
+      number,
       edition,
       series,
       chapter,
@@ -121,6 +123,7 @@
         bind:school
         bind:journal
         bind:volume
+        bind:number
         bind:edition
         bind:series
         bind:chapter
