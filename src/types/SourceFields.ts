@@ -13,7 +13,9 @@ export type SourceFields = {
   chapter?: number;
   series?: string;
   pages?: string[];
-  doi?: URL;
+  doi?: string;
+  issn?: string;
+  url?: string;
 
   address?: string;
   authors: string[];

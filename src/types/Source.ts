@@ -16,6 +16,7 @@ import { addSource, fileIsSource, sources } from "../store/sources";
 
 export type Source = {
   name: string;
+  abstract: string;
   fields: SourceFields;
 };
 
@@ -24,15 +25,16 @@ export type Source = {
  * Empty sources are not valid and should not be saved.
  */
 export function emptySource(): Source {
-  return { name: "", fields: { title: "", authors: [] } };
+  return { name: "", abstract: "", fields: { title: "", authors: [] } };
 }
 
-export function newSource(fields: SourceFields): Source {
+export function newSource(fields: SourceFields, abstract = ""): Source {
   assert(fields.title, "Source must have a title");
   assert(fields.authors.length > 0, "Source must have at least one author");
 
   return {
     name: makeSourceName(fields.title, fields.authors, fields.date),
+    abstract,
     fields,
   };
 }
@@ -91,7 +93,7 @@ export async function saveSource(
     file = await vault.create(join(sourceDir.path, source.name) + ".md", "");
   }
 
-  await vault.modify(file, "---\n" + content + "\n---");
+  await vault.modify(file, "---\n" + content + "\n---\n" + source.abstract);
 
   if (settings.autoRename) {
     const newName = makeSourceName(
@@ -111,7 +113,7 @@ export async function loadSource(
   file: TFile
 ): Promise<Source | null> {
   const content = await vault.read(file);
-  const front = content.split("---")?.[1];
+  const [_, front, abstract] = content.split("---");
 
   if (front == null) {
     return null;
@@ -120,7 +122,7 @@ export async function loadSource(
   const fields = parseYaml(front) as SourceFields;
   const name = basename(file.name, ".md");
 
-  return { name, fields };
+  return { name, fields, abstract: abstract?.trim() ?? "" };
 }
 
 export function renderSource(source: Source): HTMLDivElement {
@@ -143,7 +145,7 @@ export function renderSource(source: Source): HTMLDivElement {
 export function parseSource(yaml: string): Source {
   const fields = parseYaml(yaml);
   fields.authors = fields.authors.map(parseName);
-  return { name: "", fields };
+  return { fields, name: "", abstract: "" };
 }
 
 export async function makeSourceFolder(vault: Vault, settings: Settings) {

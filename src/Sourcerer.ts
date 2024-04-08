@@ -17,6 +17,7 @@ import { Source, loadSource } from "./types/Source";
 import { makeListSourcesCommand } from "./commands/listSourcesCommand";
 import { makeReloadSourcesCommand } from "./commands/reloadSourcesCommand";
 import { makeNewSourceCommand } from "./commands/newSourceCommand";
+import { importCrossRef } from "./importers/importCrossRef";
 
 export const APP_NAME = "Sourcerer";
 
@@ -28,6 +29,7 @@ export class Sourcerer extends Plugin {
   async onload(): Promise<void> {
     this.settingsTab = new SettingsTab(this);
     this.sourceListModal = new SourceListModal(this);
+    (window as any).importCrossRef = importCrossRef;
 
     await this.loadSettings();
     this.addSettingTab(this.settingsTab);
@@ -73,6 +75,7 @@ export class Sourcerer extends Plugin {
 
   async createFileListeners() {
     const vault = this.app.vault;
+
     vault.on("create", async (file) => {
       if (!fileIsSource(vault, this.settings, file)) return;
       const source = await loadSource(vault, file as TFile);

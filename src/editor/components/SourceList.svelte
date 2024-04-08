@@ -4,6 +4,7 @@
   import SourceListItem from "./SourceListItem.svelte";
 
   export let onAddSource: () => void;
+  export let onImportSource: () => void;
   export let onEditSource: (source: Source) => void;
   export let onDeleteSource: (source: Source) => void;
 </script>
@@ -20,7 +21,8 @@
   </ul>
 
   <div class="buttons">
-    <button on:click={onAddSource} class="source-add">Add source</button>
+    <button on:click={onImportSource}>Import source</button>
+    <button on:click={onAddSource}>Add source</button>
   </div>
 </div>
 
@@ -35,6 +37,7 @@
   }
 
   .buttons {
-    margin-top: var(--size-4-4);
+    display: flex;
+    gap: var(--size-4-3);
   }
 </style>
