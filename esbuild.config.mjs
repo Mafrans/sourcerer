@@ -17,7 +17,7 @@ fs.copyFileSync("versions.json", "dist/versions.json");
 const context = await esbuild.context({
   plugins: [
     esbuildSvelte({
-      compilerOptions: { css: true },
+      compilerOptions: { css: "injected" },
       preprocess: sveltePreprocess(),
     }),
   ],
