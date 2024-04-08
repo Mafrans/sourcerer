@@ -2,13 +2,25 @@
   import { LucideX } from "lucide-svelte";
   import { Name } from "../../../names";
   import MiniButton from "../MiniButton.svelte";
+  import { onMount } from "svelte";
 
   export let author: Name;
   export let onRemove: () => void;
+
+  let firstNameInput: HTMLInputElement;
+
+  onMount(() => {
+    firstNameInput.focus();
+  });
 </script>
 
 <li>
-  <input type="text" bind:value={author[0]} placeholder="First name" />
+  <input
+    bind:this={firstNameInput}
+    type="text"
+    bind:value={author[0]}
+    placeholder="First name"
+  />
   <input type="text" bind:value={author[1]} placeholder="Last name" />
   <MiniButton on:click={onRemove} icon={LucideX} />
 </li>
