@@ -15,6 +15,6 @@
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "allowJs": true,
-    "types": ["svelte", "node"]
+    "types": ["svelte", "node", "obsidian-typings"]
   }
 }

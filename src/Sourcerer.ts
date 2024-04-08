@@ -59,12 +59,11 @@ export class Sourcerer extends Plugin {
   }
 
   registerFrontmatterProperties() {
-    const properties = {
+    const properties: Record<string, "text"> = {
       "cite-style": "text",
     };
 
-    const typeManager = (this.app as any).metadataTypeManager;
-    console.log({ props: typeManager.getAllProperties() });
+    const typeManager = this.app.metadataTypeManager;
     for (const [name, type] of Object.entries(properties)) {
       if (!typeManager.getPropertyInfo(name)) {
         typeManager.setType(name, type);
