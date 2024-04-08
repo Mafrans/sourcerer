@@ -44,7 +44,6 @@
     align-items: center;
     height: 30px;
     gap: var(--size-4-2);
-    font-weight: bold;
     font-size: var(--font-ui-medium);
   }
 
