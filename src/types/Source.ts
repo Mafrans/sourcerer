@@ -12,6 +12,7 @@ import { Settings } from "../Settings";
 import assert from "assert";
 import { SourceFields } from "./SourceFields";
 import moment from "moment";
+import { addSource, fileIsSource, sources } from "../store/sources";
 
 export type Source = {
   name: string;
@@ -83,12 +84,7 @@ export async function saveSource(
     source.name = makeSourceName(source.fields.title, source.fields.authors);
   }
 
-  let sourceDir = vault.getFolderByPath(settings.sourceDir);
-  if (sourceDir == null) {
-    sourceDir = await vault.createFolder(settings.sourceDir);
-  }
-
-  console.log(getSourceFilePath(settings, source));
+  const sourceDir = await makeSourceFolder(vault, settings);
   const content = stringifyYaml(source.fields);
   let file = getSourceFile(vault, settings, source);
   if (file == null) {
@@ -148,4 +144,25 @@ export function parseSource(yaml: string): Source {
   const fields = parseYaml(yaml);
   fields.authors = fields.authors.map(parseName);
   return { name: "", fields };
+}
+
+export async function makeSourceFolder(vault: Vault, settings: Settings) {
+  let sourceDir = vault.getFolderByPath(settings.sourceDir);
+  if (sourceDir == null) {
+    sourceDir = await vault.createFolder(settings.sourceDir);
+  }
+  return sourceDir;
+}
+
+export async function reloadSources(vault: Vault, settings: Settings) {
+  sources.set([]);
+  const files = vault.getFiles();
+  for (const file of files) {
+    if (fileIsSource(vault, settings, file)) {
+      const source = await loadSource(vault, file as TFile);
+      if (source != null) {
+        addSource(source);
+      }
+    }
+  }
 }

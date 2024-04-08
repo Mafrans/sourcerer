@@ -14,6 +14,9 @@ import { makeBibliographyProcessor } from "./editor/postprocessor/BibliographyPr
 import { makeReferenceProcessor } from "./editor/postprocessor/ReferenceProcessor";
 import { basename } from "path";
 import { Source, loadSource } from "./types/Source";
+import { makeListSourcesCommand } from "./commands/listSourcesCommand";
+import { makeReloadSourcesCommand } from "./commands/reloadSourcesCommand";
+import { makeNewSourceCommand } from "./commands/newSourceCommand";
 
 export const APP_NAME = "Sourcerer";
 
@@ -25,7 +28,24 @@ export class Sourcerer extends Plugin {
   async onload(): Promise<void> {
     this.settingsTab = new SettingsTab(this);
     this.sourceListModal = new SourceListModal(this);
+    this.createFileListeners();
 
+    this.addCommand(makeListSourcesCommand(this));
+    this.addCommand(makeReloadSourcesCommand(this));
+    this.addCommand(makeNewSourceCommand(this));
+  }
+
+  onunload(): void {}
+
+  async loadSettings() {
+    this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+  }
+
+  async saveSettings() {
+    await this.saveData(this.settings);
+  }
+
+  async createFileListeners() {
     const vault = this.app.vault;
     vault.on("create", async (file) => {
       if (!fileIsSource(vault, this.settings, file)) return;
@@ -66,15 +86,5 @@ export class Sourcerer extends Plugin {
     this.addRibbonIcon("book-marked", "Source library", async () => {
       this.sourceListModal.open();
     });
-  }
-
-  onunload(): void {}
-
-  async loadSettings() {
-    this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
-  }
-
-  async saveSettings() {
-    await this.saveData(this.settings);
   }
 }

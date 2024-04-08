@@ -1,8 +1,6 @@
-import { basename, join } from "path";
 import { Source } from "../types/Source";
-import { Sourcerer } from "../Sourcerer";
-import { TAbstractFile, TFile, Vault } from "obsidian";
-import { Unsubscriber, Writable, get, writable } from "svelte/store";
+import { TAbstractFile, Vault } from "obsidian";
+import { get, writable } from "svelte/store";
 import { Settings } from "../Settings";
 
 export const sources = writable<Source[]>([]);
