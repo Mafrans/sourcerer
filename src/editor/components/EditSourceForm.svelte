@@ -134,8 +134,8 @@
   {/if}
 
   <div class="buttons">
-    <button on:click={onCancel} class="cancel">Cancel</button>
-    <button on:click={handleSubmit} class="submit preferred">Submit</button>
+    <button on:click={handleSubmit} class="mod-cta">Save</button>
+    <button on:click={onCancel}>Cancel</button>
   </div>
 </div>
 

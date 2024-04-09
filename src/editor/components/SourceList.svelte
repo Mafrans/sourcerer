@@ -21,8 +21,8 @@
   </ul>
 
   <div class="buttons">
-    <button on:click={onImportSource}>Import source</button>
     <button on:click={onAddSource}>Add source</button>
+    <button on:click={onImportSource}>Import source</button>
   </div>
 </div>
 
