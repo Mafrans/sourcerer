@@ -12,7 +12,7 @@ export class DeleteSourceModal extends Modal {
   constructor(plugin: Sourcerer) {
     super(plugin.app);
     this.plugin = plugin;
-    this.modalEl.style.maxWidth = "27em";
+    this.modalEl.style.maxWidth = "30em";
     this.setTitle("Delete source");
   }
 

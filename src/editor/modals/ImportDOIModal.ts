@@ -1,6 +1,6 @@
 import { Modal, Notice } from "obsidian";
 import { Sourcerer } from "../../Sourcerer";
-import ImportDoiForm from "../components/ImportDOIForm.svelte";
+import ImportDoiForm from "../components/ImportDoiForm.svelte";
 import { importCrossRef } from "../../importers/importCrossRef";
 import { saveSource } from "../../types/Source";
 import { sources } from "../../store/sources";
@@ -13,7 +13,7 @@ export class ImportDOIModal extends Modal {
     super(plugin.app);
     this.plugin = plugin;
     this.modalEl.style.maxWidth = "20em";
-    this.setTitle("Import DOI");
+    this.setTitle("Import from DOI");
   }
 
   onOpen() {
