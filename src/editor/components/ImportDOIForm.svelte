@@ -34,10 +34,6 @@
     gap: var(--size-4-4);
   }
 
-  input {
-    text-align: center;
-  }
-
   .buttons {
     display: flex;
     gap: var(--size-4-3);
