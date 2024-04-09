@@ -22,7 +22,7 @@ export class ImportDOIModal extends Modal {
       target: this.contentEl,
       props: {
         onImport: (doi: string) => this.handleImport(doi),
-        onClose: () => this.onClose(),
+        onClose: () => this.close(),
       },
     });
   }
