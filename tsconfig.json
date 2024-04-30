@@ -16,5 +16,6 @@
     "forceConsistentCasingInFileNames": true,
     "allowJs": true,
     "types": ["svelte", "node", "obsidian-typings"]
-  }
+  },
+  "include": ["./src"]
 }

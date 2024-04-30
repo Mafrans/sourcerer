@@ -4,9 +4,16 @@
   import SourceListItem from "./SourceListItem.svelte";
 
   export let onAddSource: () => void;
-  export let onImportSource: () => void;
+  export let onImportSource: (type: "bibtex" | "doi") => void;
   export let onEditSource: (source: Source) => void;
   export let onDeleteSource: (source: Source) => void;
+
+  let importType: "" | "bibtex" | "doi";
+
+  $: if (importType) {
+    onImportSource(importType);
+    importType = "";
+  }
 </script>
 
 <div class="sources">
@@ -22,7 +29,11 @@
 
   <div class="buttons">
     <button on:click={onAddSource}>Add source</button>
-    <button on:click={onImportSource}>Import source</button>
+    <select bind:value={importType}>
+      <option value="" hidden disabled selected>Import source</option>
+      <option value="doi">From DOI</option>
+      <option value="bibtex">From BibTex</option>
+    </select>
   </div>
 </div>
 
@@ -38,6 +49,12 @@
 
   .buttons {
     display: flex;
+    height: 30px;
+    overflow: visible;
     gap: var(--size-4-3);
+  }
+
+  select {
+    padding-right: 0.8em;
   }
 </style>

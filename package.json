@@ -22,6 +22,7 @@
     "@codemirror/view": "^6.23.0",
     "@retorquere/bibtex-parser": "^8.0.12",
     "@tsconfig/svelte": "^5.0.2",
+    "citeproc": "^2.4.63",
     "esbuild-svelte": "^0.8.0",
     "lucide-svelte": "^0.363.0",
     "obsidian": "^1.4.11",
