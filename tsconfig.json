@@ -15,7 +15,7 @@
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "allowJs": true,
-    "types": ["svelte", "node", "obsidian-typings"]
+    "types": ["svelte", "node", "obsidian-typings", "./module.d.ts"]
   },
   "include": ["./src"]
 }

@@ -1,5 +1,6 @@
 import { readFile } from "fs/promises";
 import {
+  App,
   FileSystemAdapter,
   TAbstractFile,
   TFile,
@@ -35,4 +36,15 @@ export function formatFileName(name: string) {
 
 export function uid(): string {
   return Math.random().toString(36).substring(2, 8);
+}
+
+export function processCache<T extends object>(app: App, key: string, fn: (data: T) => Promise<T> | T) {
+  const data = JSON.parse(app.loadLocalStorage(key)) as T;
+
+  let mutated = fn(data ?? {});
+  if (mutated instanceof Promise) {
+    mutated.then((data) => mutated = data);
+  }
+
+  app.saveLocalStorage(key, mutated);
 }
