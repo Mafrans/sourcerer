@@ -13,7 +13,7 @@ export function importBibTex(content: string): Source[] | null {
   let sources: Source[] = [];
   for (const e of entries) {
     const source = emptySource();
-    source.fields.howpublished = e.type as PublicationType;
+    source.fields.type = e.type as PublicationType;
     const bibtex = e.fields as Record<string, string> & typeof e.fields;
 
     if (bibtex.author) {

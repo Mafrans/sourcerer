@@ -1,3 +1,5 @@
+import { NameVariable } from "citeproc";
+
 export type Name = [string, string];
 
 export function emptyName(): Name {
@@ -18,6 +20,13 @@ export function formatShortName(name: Name): string {
 
 export function formatAbbrName(name: Name): string {
   return `${name[0][0]}.${name[1][0]}.`;
+}
+
+export function formatCSLJSONName(name: Name): NameVariable {
+  return {
+    family: name[1],
+    given: name[0],
+  };
 }
 
 export function parseName(name: string): Name {

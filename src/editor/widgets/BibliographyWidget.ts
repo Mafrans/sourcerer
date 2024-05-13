@@ -1,24 +1,22 @@
 import { EditorView, WidgetType } from "@codemirror/view";
 import { Source } from "../../types/Source";
-import { CiteStyle } from "../../CiteStyle";
+import { Engine } from "citeproc";
 
 export class BibliographyWidget extends WidgetType {
-  private sources: Source[];
-  private citeStyle: CiteStyle;
+  private csl: Engine;
 
-  constructor(sources: Source[], citeStyle: CiteStyle) {
+  constructor(csl: Engine) {
     super();
-    this.sources = sources;
-    this.citeStyle = citeStyle;
+    this.csl = csl;
   }
 
   toDOM(view: EditorView): HTMLElement {
     const element = document.createElement("div");
     element.className = "bibliography-widget";
 
-    if (this.citeStyle != null) {
-      element.appendChild(this.citeStyle.bibliography(this.sources));
-    }
+    const bibliography = this.csl.makeBibliography();
+    console.log(bibliography);
+    element.innerHTML = bibliography?.[1]?.join("");
 
     return element;
   }

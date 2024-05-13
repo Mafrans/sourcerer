@@ -18,6 +18,7 @@ import { makeListSourcesCommand } from "./commands/listSourcesCommand";
 import { makeReloadSourcesCommand } from "./commands/reloadSourcesCommand";
 import { makeNewSourceCommand } from "./commands/newSourceCommand";
 import { importCrossRef } from "./importers/importCrossRef";
+import { CSLManager } from "./CSLManager";
 
 export const APP_NAME = "Sourcerer";
 
@@ -25,10 +26,12 @@ export class Sourcerer extends Plugin {
   settingsTab!: SettingsTab;
   sourceListModal!: SourceListModal;
   settings!: Settings;
+  cslManager!: CSLManager;
 
   async onload(): Promise<void> {
     this.settingsTab = new SettingsTab(this);
     this.sourceListModal = new SourceListModal(this);
+    this.cslManager = new CSLManager(this);
     (window as any).importCrossRef = importCrossRef;
 
     await this.loadSettings();

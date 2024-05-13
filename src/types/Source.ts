@@ -1,18 +1,20 @@
 import { App, TFile, TFolder, Vault, parseYaml, stringifyYaml } from "obsidian";
 import {
   Name,
+  formatCSLJSONName,
   formatName,
   formatShortName,
   nameToString,
   parseName,
 } from "../names";
-import { formatFileName, getVaultRootPath } from "../utils";
+import { formatFileName, getVaultRootPath, uid } from "../utils";
 import { basename, join } from "path";
 import { Settings } from "../Settings";
 import assert from "assert";
 import { SourceFields } from "./SourceFields";
 import moment from "moment";
 import { addSource, fileIsSource, sources } from "../store/sources";
+import { CSLJSON } from "citeproc";
 
 export type Source = {
   name: string;
@@ -25,7 +27,11 @@ export type Source = {
  * Empty sources are not valid and should not be saved.
  */
 export function emptySource(): Source {
-  return { name: "", abstract: "", fields: { title: "", authors: [] } };
+  return {
+    name: "",
+    abstract: "",
+    fields: { id: uid(), type: "article", title: "", authors: [] },
+  };
 }
 
 export function newSource(fields: SourceFields, abstract = ""): Source {
@@ -165,4 +171,16 @@ export async function reloadSources(vault: Vault, settings: Settings) {
       }
     }
   }
+}
+
+export function sourceToCSLJSON(source: Source): CSLJSON {
+  const f = source.fields;
+  return {
+    id: f.id,
+    type: f.type as CSLJSON["type"],
+    author: f.authors.map(parseName).map(formatCSLJSONName),
+    "container-title": f.journal,
+    title: f.title,
+    DOI: f.doi,
+  };
 }

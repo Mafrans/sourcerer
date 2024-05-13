@@ -32,7 +32,7 @@
 
   let title = fields.title || "";
   let booktitle = fields.booktitle;
-  let publicationType = fields.howpublished || "article";
+  let publicationType = fields.type || "article";
   let publisher = fields.publisher;
   let address = fields.address;
   let institution = fields.institution;
@@ -74,7 +74,7 @@
       ...source.fields,
       title,
       booktitle,
-      howpublished: publicationType,
+      type: publicationType,
       publisher,
       address,
       institution,

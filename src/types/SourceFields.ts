@@ -1,11 +1,13 @@
 import { PublicationType } from "./PublicationType";
 
 export type SourceFields = {
+  id: string;
+
+  type: PublicationType;
   title: string;
   booktitle?: string;
   annote?: string;
   note?: string;
-  howpublished?: PublicationType;
 
   journal?: string;
   edition?: number;

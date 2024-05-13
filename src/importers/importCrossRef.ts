@@ -54,7 +54,7 @@ export async function importCrossRef(doi: string): Promise<Source | null> {
 
   const source = emptySource();
   source.abstract = message.abstract;
-  if (message.abstract.startsWith("<jats:p>")) {
+  if (message.abstract?.startsWith("<jats:p>")) {
     source.abstract = message.abstract.replace(/<\/?jats:p>/g, "");
   }
 
@@ -62,7 +62,7 @@ export async function importCrossRef(doi: string): Promise<Source | null> {
   source.fields.issn = message.ISSN?.[0];
   source.fields.url = message.URL;
   source.fields.title = message.title?.[0];
-  source.fields.howpublished = crossRefTypeMap[message.type] ?? "misc";
+  source.fields.type = crossRefTypeMap[message.type] ?? "misc";
   source.fields.journal = message["container-title"]?.[0];
   source.fields.volume = parseInt(message.volume);
   source.fields.number = parseInt(message.issue);

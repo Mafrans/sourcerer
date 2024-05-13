@@ -1,25 +1,48 @@
 import { EditorView, WidgetType } from "@codemirror/view";
-import { Source } from "../../types/Source";
-import { CiteStyle } from "../../CiteStyle";
+import { Engine } from "citeproc";
+import { Reference } from "../../types/Reference";
+import { Source, sourceToCSLJSON } from "../../types/Source";
 
 export class ReferenceWidget extends WidgetType {
+  private csl: Engine;
   private source: Source;
   private index: number;
-  private citeStyle: CiteStyle;
+  // private before: Reference[];
+  // private after: Reference[];
 
-  constructor(index: number, source: Source, citeStyle: CiteStyle) {
+  constructor(
+    citeEngine: Engine,
+    source: Source,
+    index: number
+    // before: Reference[],
+    // after: Reference[]
+  ) {
     super();
-    this.index = index;
+    this.csl = citeEngine;
     this.source = source;
-    this.citeStyle = citeStyle;
+    this.index = index;
+    // this.before = before;
+    // this.after = after;
   }
 
   toDOM(view: EditorView): HTMLElement {
     const element = document.createElement("span");
     element.className = "reference-widget";
 
-    element.appendChild(this.citeStyle.cite(this.source, this.index));
+    const [, [citation]] = this.csl.processCitationCluster(
+      {
+        citationItems: [{ id: this.source.fields.id }],
+        properties: { noteIndex: this.index },
+      },
+      [],
+      [],
+      "html"
+    );
 
+    console.log(citation);
+
+    // TODO: this is dangerous, we should sanitize the citation
+    element.innerHTML = citation[1];
     return element;
   }
 }

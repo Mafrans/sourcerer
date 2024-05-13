@@ -38,13 +38,56 @@ export function uid(): string {
   return Math.random().toString(36).substring(2, 8);
 }
 
-export function processCache<T extends object>(app: App, key: string, fn: (data: T) => Promise<T> | T) {
-  const data = JSON.parse(app.loadLocalStorage(key)) as T;
+export async function getCacheDir(vault: Vault): Promise<string> {
+  const cacheDir = join(vault.configDir, "sourcerer", "cache");
+  const fs = vault.adapter.fs?.promises;
+  if (!fs) return cacheDir;
 
-  let mutated = fn(data ?? {});
-  if (mutated instanceof Promise) {
-    mutated.then((data) => mutated = data);
+  try {
+    await fs.access(cacheDir);
+  } catch (e) {
+    await fs.mkdir(cacheDir, { recursive: true });
   }
+  return cacheDir;
+}
 
-  app.saveLocalStorage(key, mutated);
+export async function loadCache<T>(
+  vault: Vault,
+  name: string
+): Promise<T | undefined> {
+  const cacheDir = await getCacheDir(vault);
+  const cachePath = join(cacheDir, `${name}.json`);
+  const fs = vault.adapter.fs?.promises;
+  if (!fs) return undefined;
+
+  try {
+    const data = await fs.readFile(cachePath, "utf-8");
+    return JSON.parse(data);
+  } catch (e) {
+    return undefined;
+  }
+}
+
+export async function saveCache<T>(
+  vault: Vault,
+  name: string,
+  data: T
+): Promise<void> {
+  const cacheDir = await getCacheDir(vault);
+  const cachePath = join(cacheDir, `${name}.json`);
+  const fs = vault.adapter.fs?.promises;
+  if (!fs) return;
+
+  await fs.writeFile(cachePath, JSON.stringify(data));
+}
+
+export async function processCache<T>(
+  vault: Vault,
+  name: string,
+  process: (data: T | undefined) => Promise<T>
+): Promise<T> {
+  let data = await loadCache<T>(vault, name);
+  data = await process(data);
+  await saveCache(vault, name, data);
+  return data;
 }
